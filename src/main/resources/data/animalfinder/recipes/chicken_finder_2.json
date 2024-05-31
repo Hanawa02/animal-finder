@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " B ",
+    " A ",
+    "  "
+  ],
+  "key": {
+    "A": {
+//      "item": "minecraft:compass"
+      "item": "minecraft:oak_planks"
+    },
+    "B": {
+//      "item": "minecraft:feather"
+      "item": "minecraft:oak_log"
+    }
+  },
+  "result": {
+    "item": "animalfinder:chicken_finder"
+  }
+}
