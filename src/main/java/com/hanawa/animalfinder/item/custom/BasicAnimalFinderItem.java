@@ -6,18 +6,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ChickenFinderItem extends Item {
-    public ChickenFinderItem(Properties pProperties) {
+public class BasicAnimalFinderItem extends Item {
+    public BasicAnimalFinderItem(Properties pProperties) {
         super(pProperties);
     }
 
