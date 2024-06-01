@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AnimalFinderItem extends Item {
+public class AnimalFinderToolItem extends Item {
 
     private int distance = 32;
     private int maxSlots = 1;
@@ -32,14 +32,14 @@ public class AnimalFinderItem extends Item {
     };
     // world.playSound(player.posX, player.posY, player.posZ, RegistrarIronBackpacks.BACKPACK_OPEN, SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 
-    public AnimalFinderItem(Properties pProperties, int distance, int maxSlots ) {
+    public AnimalFinderToolItem(Properties pProperties, int distance, int maxSlots ) {
         super(pProperties);
         this.distance = distance;
         this.maxSlots = maxSlots;
         this.slottedEntities = new ArrayList<>();
     }
 
-    public AnimalFinderItem(Properties pProperties, int distance, int maxSlots, List<String> slottedEntities) {
+    public AnimalFinderToolItem(Properties pProperties, int distance, int maxSlots, List<String> slottedEntities) {
         super(pProperties);
         this.distance = distance;
         this.maxSlots = maxSlots;
