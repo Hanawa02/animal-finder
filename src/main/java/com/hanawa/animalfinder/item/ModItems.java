@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, AnimalFinder.MOD_ID);
 
-    public static final RegistryObject<Item> BASIC_ANIMAL_FINDER = ITEMS.register("basic_animal_finder", () -> new BasicAnimalFinderItem(new Item.Properties()));
+    public static final RegistryObject<Item> CHICKEN_FINDER = ITEMS.register("basic_animal_finder", () -> new BasicAnimalFinderItem(new Item.Properties()));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
