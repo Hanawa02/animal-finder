@@ -30,6 +30,7 @@ public class AnimalFinderItem extends Item {
             put("item.minecraft.feather", "entity.minecraft.chicken");
         }
     };
+    // world.playSound(player.posX, player.posY, player.posZ, RegistrarIronBackpacks.BACKPACK_OPEN, SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 
     public AnimalFinderItem(Properties pProperties, int distance, int maxSlots) {
         super(pProperties);

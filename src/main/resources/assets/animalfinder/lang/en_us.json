@@ -1,3 +1,7 @@
 {
-  "item.animalfinder.basic_animal_finder": "Animal Finder"
+  "item.animalfinder.basic_animal_finder": "Animal Finder",
+  "item.animalfinder.copper_animal_finder": "Copper Animal Finder",
+  "item.animalfinder.iron_animal_finder": "Iron Animal Finder",
+  "item.animalfinder.gold_animal_finder": "Gold Animal Finder",
+  "item.animalfinder.diamond_animal_finder": "Diamond Animal Finder"
 }

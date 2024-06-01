@@ -8,16 +8,16 @@
   ],
   "key": {
     "A": {
-      "tag": "minecraft:planks"
+      "tag": "forge:ingots/iron"
     },
     "B": {
-      "item": "minecraft:compass"
+      "item": "animalfinder:copper_animal_finder"
     },
     "C": {
-      "tag": "forge:ingots/copper"
+      "tag": "forge:ingots/gold"
     }
   },
   "result": {
-    "item": "animalfinder:basic_animal_finder"
+    "item": "animalfinder:iron_animal_finder"
   }
 }

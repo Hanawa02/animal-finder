@@ -1,0 +1,23 @@
+  {
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "pattern": [
+      "AAA",
+      "ABA",
+      " C "
+    ],
+    "key": {
+      "A": {
+        "tag": "forge:ingots/copper"
+      },
+      "B": {
+        "item": "animalfinder:basic_animal_finder"
+      },
+      "C": {
+        "tag": "forge:ingots/iron"
+      }
+    },
+    "result": {
+      "item": "animalfinder:copper_animal_finder"
+    }
+  }

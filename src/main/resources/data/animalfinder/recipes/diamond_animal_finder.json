@@ -8,16 +8,18 @@
   ],
   "key": {
     "A": {
-      "tag": "minecraft:planks"
+      "tag": "forge:gems/diamond"
     },
     "B": {
-      "item": "minecraft:compass"
+      "item": "animalfinder:gold_animal_finder"
     },
     "C": {
-      "tag": "forge:ingots/copper"
+      "tag": "forge:ingots/netherite"
     }
   },
   "result": {
-    "item": "animalfinder:basic_animal_finder"
+    "item": "animalfinder:diamond_animal_finder"
+
   }
 }
+
