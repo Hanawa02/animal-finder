@@ -8,7 +8,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModItems {
+public class AnimalFinderModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, AnimalFinder.MOD_ID);
 
     public static final RegistryObject<Item> BASIC_ANIMAL_FINDER = ITEMS.register("basic_animal_finder", () -> new AnimalFinderItem(new Item.Properties(), 32, 1));

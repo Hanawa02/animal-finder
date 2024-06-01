@@ -1,8 +1,7 @@
 package com.hanawa.animalfinder;
 
-import com.hanawa.animalfinder.item.ModItems;
+import com.hanawa.animalfinder.item.AnimalFinderModItems;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,7 +28,7 @@ public class AnimalFinder
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ModItems.register(modEventBus);
+        AnimalFinderModItems.register(modEventBus);
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
@@ -67,11 +66,11 @@ public class AnimalFinder
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(ModItems.BASIC_ANIMAL_FINDER);
-            event.accept(ModItems.COPPER_ANIMAL_FINDER);
-            event.accept(ModItems.IRON_ANIMAL_FINDER);
-            event.accept(ModItems.GOLD_ANIMAL_FINDER);
-            event.accept(ModItems.DIAMOND_ANIMAL_FINDER);
+            event.accept(AnimalFinderModItems.BASIC_ANIMAL_FINDER);
+            event.accept(AnimalFinderModItems.COPPER_ANIMAL_FINDER);
+            event.accept(AnimalFinderModItems.IRON_ANIMAL_FINDER);
+            event.accept(AnimalFinderModItems.GOLD_ANIMAL_FINDER);
+            event.accept(AnimalFinderModItems.DIAMOND_ANIMAL_FINDER);
         }
     }
 
