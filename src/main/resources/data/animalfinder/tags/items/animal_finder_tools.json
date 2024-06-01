@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "animalfinder:basic_animal_finder",
+    "animalfinder:copper_animal_finder",
+    "animalfinder:iron_animal_finder",
+    "animalfinder:gold_animal_finder",
+    "animalfinder:diamond_animal_finder"
+  ]
+}

@@ -65,13 +65,15 @@ public class AnimalFinder
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(AnimalFinderModItems.BASIC_ANIMAL_FINDER);
             event.accept(AnimalFinderModItems.COPPER_ANIMAL_FINDER);
             event.accept(AnimalFinderModItems.IRON_ANIMAL_FINDER);
             event.accept(AnimalFinderModItems.GOLD_ANIMAL_FINDER);
             event.accept(AnimalFinderModItems.DIAMOND_ANIMAL_FINDER);
         }
+
+
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

@@ -11,7 +11,7 @@
         "tag": "forge:ingots/copper"
       },
       "B": {
-        "item": "animalfinder:basic_animal_finder"
+        "item": "minecraft:compass"
       },
       "C": {
         "tag": "forge:ingots/iron"

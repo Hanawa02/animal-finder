@@ -11,7 +11,7 @@
       "tag": "forge:ingots/gold"
     },
     "B": {
-      "item": "animalfinder:iron_animal_finder"
+      "item": "minecraft:compass"
     },
     "C": {
       "tag": "forge:gems/diamond"

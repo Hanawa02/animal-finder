@@ -3,5 +3,11 @@
   "item.animalfinder.copper_animal_finder": "Copper Animal Finder",
   "item.animalfinder.iron_animal_finder": "Iron Animal Finder",
   "item.animalfinder.gold_animal_finder": "Gold Animal Finder",
-  "item.animalfinder.diamond_animal_finder": "Diamond Animal Finder"
+  "item.animalfinder.diamond_animal_finder": "Diamond Animal Finder",
+  "animalfinder.tool.message.full_index": "Finder index is full!",
+  "animalfinder.tool.message.empty_index": "Finder index is empty! Index an animal to start the search",
+  "animalfinder.tool.message.animal_added_to_index": "Added animal to search index: %s",
+  "animalfinder.tool.message.searching": "Searching for %s in a %s radius starting from %s.",
+  "animalfinder.tool.message.search_result_found": "'%s' found at coordinates %s.",
+  "animalfinder.tool.message.search_result_empty": "No animal was found."
 }
