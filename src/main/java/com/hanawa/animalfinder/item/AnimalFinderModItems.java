@@ -11,10 +11,10 @@ import net.minecraftforge.registries.RegistryObject;
 public class AnimalFinderModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, AnimalFinder.MOD_ID);
 
-    public static final RegistryObject<Item> BASIC_ANIMAL_FINDER = ITEMS.register("basic_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties(), 32, 1));
-    public static final RegistryObject<Item> COPPER_ANIMAL_FINDER = ITEMS.register("copper_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties(), 48, 2));
-    public static final RegistryObject<Item> IRON_ANIMAL_FINDER = ITEMS.register("iron_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties(), 64, 4));
-    public static final RegistryObject<Item> GOLD_ANIMAL_FINDER = ITEMS.register("gold_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties(), 128, 8));
+    public static final RegistryObject<Item> BASIC_ANIMAL_FINDER = ITEMS.register("basic_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties().durability(256), 32, 1));
+    public static final RegistryObject<Item> COPPER_ANIMAL_FINDER = ITEMS.register("copper_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties().durability(512), 48, 2));
+    public static final RegistryObject<Item> IRON_ANIMAL_FINDER = ITEMS.register("iron_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties().durability(1024), 64, 4));
+    public static final RegistryObject<Item> GOLD_ANIMAL_FINDER = ITEMS.register("gold_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties().durability(2048), 128, 8));
     public static final RegistryObject<Item> DIAMOND_ANIMAL_FINDER = ITEMS.register("diamond_animal_finder", () -> new AnimalFinderToolItem(new Item.Properties(), 256, 256));
 
     public static void register(IEventBus eventBus) {
