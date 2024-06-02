@@ -24,7 +24,7 @@ jobs:
           name: Build Files
           path: build/libs
       - name: Create Release
-        run: gh release create ${{ github.ref_name }} ./build/libs --generate-notes
+        run: gh release create ${{ github.ref_name }} ./build/libs/* --generate-notes
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
