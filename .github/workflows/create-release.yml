@@ -27,4 +27,9 @@ jobs:
         run: gh release create ${{ github.ref_name }} ./build/libs/* --generate-notes --verify-tag
         shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Remove Source Code from Release
+        run: gh release delete-asset ${{ github.ref_name }} "Source code" -y
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
