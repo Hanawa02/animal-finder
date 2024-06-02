@@ -24,10 +24,7 @@ jobs:
           name: Build Files
           path: build/libs
       - name: Create Release
-        id: create_release
-        uses: elgohr/Github-Release-Action@v5
+        run: gh release create -t "${{ github.ref.tags }}" ./build/libs --generate-notes
+        shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          title: ${{ github.ref.tags }}
-          workdir: build/libs
