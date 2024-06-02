@@ -6,7 +6,13 @@ on:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  build:
+  build-gradle-project:
+    uses: ./.github/workflows/build-gradle-project.yml
+    with:
+      upload-artifacts: true
+
+  create-release:
+    needs: build-gradle-project
     name: Create Release
     runs-on: ubuntu-latest
     steps:

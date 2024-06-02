@@ -1,7 +1,14 @@
 name: Build Gradle project
 
 on:
+  workflow_call:
+    inputs:
+      upload-artifacts:
+        required: false
+        type: boolean
+        default: false
   push:
+
 
 jobs:
   build-gradle-project:
@@ -20,7 +27,8 @@ jobs:
     - name: Run build
       run: ./gradlew build
 
-    - name: Upload build artifacts
+    - if: ${{ inputs.upload-artifacts }}
+      name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Build Files
