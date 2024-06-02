@@ -29,7 +29,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Remove Source Code from Release
-        run: gh release delete-asset ${{ github.ref_name }} "Source code" -y
+        run: gh release delete-asset ${{ github.ref_name }} "${{ github.ref_name }}.zip" -y
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
