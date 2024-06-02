@@ -8,7 +8,8 @@ on:
         type: boolean
         default: false
   push:
-
+    branches:
+      - '**'
 
 jobs:
   build-gradle-project:
