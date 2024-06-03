@@ -259,7 +259,7 @@ public class AnimalFinderToolItem extends Item {
     }
 
     private String formatVectorForMessage(Vec3 vector) {
-        return String.format("(X: %.0f,Y: %.0f,Z: %.0f)", vector.x, vector.y, vector.z);
+        return String.format("(X: %.0f, Y: %.0f, Z: %.0f)", vector.x, vector.y, vector.z);
     }
 
     private String getTranslatedEntitiesName(List<String> entities) {
