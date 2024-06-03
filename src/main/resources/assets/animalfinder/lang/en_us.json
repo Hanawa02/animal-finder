@@ -4,11 +4,13 @@
   "item.animalfinder.iron_animal_finder": "Iron Animal Finder",
   "item.animalfinder.gold_animal_finder": "Gold Animal Finder",
   "item.animalfinder.diamond_animal_finder": "Diamond Animal Finder",
-  "animalfinder.tool.tooltip": "A tool that helps you find animals near you. Animals Included in the search are: %s, and %s.",
   "animalfinder.tool.message.full_index": "Finder index is full!",
   "animalfinder.tool.message.empty_index": "Finder index is empty! Index an animal to start the search",
   "animalfinder.tool.message.animal_added_to_index": "Added animal to search index: %s",
   "animalfinder.tool.message.searching": "Searching for %s in a %s radius starting from %s.",
   "animalfinder.tool.message.search_result_found": "'%s' found at coordinates %s.",
-  "animalfinder.tool.message.search_result_empty": "No animal was found."
+  "animalfinder.tool.message.search_result_empty": "No animal was found.",
+  "animalfinder.tool.message.search_mode_set": "Search mode was set to '%s'",
+  "animalfinder.tool.search_mode.all": "All",
+  "animalfinder.tool.tooltip": "A tool that helps you find animals near you. Animals Included in the search are: %s, and %s."
 }
