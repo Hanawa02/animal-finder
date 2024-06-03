@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_connector_net.minecraft.tags.TagKey": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:ingots/iron"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "animalfinder:copper_animal_finder"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_connector_net.minecraft.tags.TagKey"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "animalfinder:copper_animal_finder"
+    ]
+  },
+  "sends_telemetry_event": false
+}

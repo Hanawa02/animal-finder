@@ -1,11 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "AAA",
-    "ABA",
-    " C "
-  ],
+  "group": "animal_finder_tool",
   "key": {
     "A": {
       "tag": "minecraft:planks"
@@ -17,7 +13,13 @@
       "tag": "forge:ingots/copper"
     }
   },
+  "pattern": [
+    "AAA",
+    "ABA",
+    " C "
+  ],
   "result": {
     "item": "animalfinder:basic_animal_finder"
-  }
+  },
+  "show_notification": true
 }

@@ -1,24 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": [
-    "AAA",
-    "ABA",
-    " C "
-  ],
+  "group": "animal_finder_tool",
   "key": {
     "A": {
       "tag": "forge:ingots/gold"
     },
     "B": {
-      "item": "minecraft:compass"
+      "item": "animalfinder:iron_animal_finder"
     },
     "C": {
       "tag": "forge:gems/diamond"
     }
   },
+  "pattern": [
+    "AAA",
+    "ABA",
+    " C "
+  ],
   "result": {
     "item": "animalfinder:gold_animal_finder"
-  }
+  },
+  "show_notification": true
 }
-
