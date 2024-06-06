@@ -47,24 +47,33 @@ public class AnimalFinderToolItem extends Item {
         tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.base"));
         tooltipComponents.add(Component.literal("")); // line break
 
-        String searchMode = getSearchMode(item);
-        tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.search_mode", I18n.get(searchMode)));
-        tooltipComponents.add(Component.literal("")); // line break
-        
+        CompoundTag tagCompound = item.getOrCreateTag();
+        String searchMode = tagCompound.getString(STORAGE_KEY_MODE);
+
+        if (!searchMode.isBlank()) {
+            tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.search_mode", I18n.get(searchMode)));
+            tooltipComponents.add(Component.literal("")); // line break
+        }
+
         if (registeredEntities.isEmpty()) {
+            tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.no_animal"));
+
             super.appendHoverText(item, level, tooltipComponents, isAdvanced);
             return;
         }
 
-        String lastAnimal = I18n.get(registeredEntities.get(registeredEntities.size() - 1));
+        List<String> registeredEntitiesName = new ArrayList<>(registeredEntities.stream().map(I18n::get).toList());
+        Collections.sort(registeredEntitiesName);
 
-        if (registeredEntities.size() == 1) {
+        String lastAnimal = I18n.get(registeredEntitiesName.get(registeredEntitiesName.size() - 1));
+
+        if (registeredEntitiesName.size() == 1) {
             tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.one_animal", lastAnimal));
             super.appendHoverText(item, level, tooltipComponents, isAdvanced);
             return;
         }
 
-        String firstAnimals = getTranslatedEntitiesName(registeredEntities.subList(0, registeredEntities.size() - 1));
+        String firstAnimals = String.join(", ", registeredEntitiesName.subList(0, registeredEntitiesName.size() - 1));
 
         tooltipComponents.add(
             Component.translatable(
@@ -76,7 +85,7 @@ public class AnimalFinderToolItem extends Item {
         super.appendHoverText(item, level, tooltipComponents, isAdvanced);
     }
 
-    /* Interactions Entrypoints */
+    /* Interactions Entrypoint */
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
         Player player = context.getPlayer();
@@ -140,7 +149,6 @@ public class AnimalFinderToolItem extends Item {
         tagCompound.putString(STORAGE_KEY_MODE, mode);
     }
 
-
     /* Actions */
 
     private InteractionResult executeSlotAttribution(Player player, LivingEntity entity) {
@@ -151,6 +159,10 @@ public class AnimalFinderToolItem extends Item {
         ItemStack mainHandItem = player.getMainHandItem();
         if (mainHandItem.isEmpty()) {
             return InteractionResult.PASS;
+        }
+
+        if (getSearchMode(mainHandItem).isBlank()) {
+            setSearchMode(mainHandItem, MODE_ALL);
         }
 
         List<String> registeredEntities = getRegisteredEntities(mainHandItem);
@@ -294,12 +306,8 @@ public class AnimalFinderToolItem extends Item {
     }
 
     private String getTranslatedEntitiesName(List<String> entities) {
-        List<String> entitiesName = new ArrayList<String>();
-
-        for(String entity: entities) {
-            entitiesName.add(I18n.get(entity));
-        }
-
+        List<String> entitiesName = new ArrayList<>(entities.stream().map(I18n::get).toList());
+        Collections.sort(entitiesName);
         return  String.join(", ", entitiesName);
     }
 }
