@@ -14,5 +14,6 @@
   "animalfinder.tool.search_mode.all": "All",
   "animalfinder.tool.tooltip.base": "A tool that helps you find animals near you.",
   "animalfinder.tool.tooltip.one_animal": "Animals Included in the search: %s.",
-  "animalfinder.tool.tooltip.more_animals": "Animals Included in the search: %s, and %s."
+  "animalfinder.tool.tooltip.more_animals": "Animals Included in the search: %s, and %s.",
+  "animalfinder.tool.tooltip.search_mode": "The current search mode is: %s"
 }

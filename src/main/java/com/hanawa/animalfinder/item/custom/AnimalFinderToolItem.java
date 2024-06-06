@@ -28,7 +28,6 @@ import java.util.*;
 public class AnimalFinderToolItem extends Item {
     private final int distance;
     private final int maxSlots;
-    public final List<String> indexedEntities;
 
     private final String MODE_ALL = "animalfinder.tool.search_mode.all";
 
@@ -46,7 +45,12 @@ public class AnimalFinderToolItem extends Item {
         List<String> registeredEntities = getRegisteredEntities(item);
 
         tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.base"));
+        tooltipComponents.add(Component.literal("")); // line break
 
+        String searchMode = getSearchMode(item);
+        tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.search_mode", I18n.get(searchMode)));
+        tooltipComponents.add(Component.literal("")); // line break
+        
         if (registeredEntities.isEmpty()) {
             super.appendHoverText(item, level, tooltipComponents, isAdvanced);
             return;
@@ -118,6 +122,24 @@ public class AnimalFinderToolItem extends Item {
         CompoundTagUtil.putStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES, entities);
     }
 
+    /* Search mode */
+    private String getSearchMode(ItemStack item) {
+        CompoundTag tagCompound = item.getOrCreateTag();
+        String searchMode = tagCompound.getString(STORAGE_KEY_MODE);
+        if (searchMode.isBlank()) {
+            setSearchMode(item, MODE_ALL);
+
+            return MODE_ALL;
+        }
+
+        return searchMode;
+    }
+
+    private void setSearchMode(ItemStack item, String mode) {
+        CompoundTag tagCompound = item.getOrCreateTag();
+        tagCompound.putString(STORAGE_KEY_MODE, mode);
+    }
+
 
     /* Actions */
 
@@ -148,28 +170,23 @@ public class AnimalFinderToolItem extends Item {
     private void changeToolMode(Player player, ItemStack mainHandItem) {
         CompoundTag tagCompound = mainHandItem.getOrCreateTag();
 
-        String modeBeforeChange = tagCompound.getString(STORAGE_KEY_MODE);
-
-        if (modeBeforeChange.isBlank()) {
-            tagCompound.putString(STORAGE_KEY_MODE, MODE_ALL);
-            modeBeforeChange = MODE_ALL;
-        }
+        String modeBeforeChange = getSearchMode(mainHandItem);
 
         List<String> registeredEntities = getRegisteredEntities(mainHandItem);
         
         if(registeredEntities.size() > 1){
-            String currentMode = tagCompound.getString(STORAGE_KEY_MODE);
+            String currentMode = getSearchMode(mainHandItem);
             int currentModeIndex = registeredEntities.indexOf(currentMode);
 
             if (currentModeIndex == registeredEntities.size() - 1) {
-                tagCompound.putString(STORAGE_KEY_MODE, MODE_ALL);
+                setSearchMode(mainHandItem, MODE_ALL);
             } else {
-                tagCompound.putString(STORAGE_KEY_MODE, registeredEntities.get(currentModeIndex + 1));
+                setSearchMode(mainHandItem, registeredEntities.get(currentModeIndex + 1));
             }
         }
 
-        if (!modeBeforeChange.equals(tagCompound.getString(STORAGE_KEY_MODE))) {
-            sendMessage(player, "animalfinder.tool.message.search_mode_set", I18n.get(tagCompound.getString(STORAGE_KEY_MODE)));
+        if (!modeBeforeChange.equals(getSearchMode(mainHandItem))) {
+            sendMessage(player, "animalfinder.tool.message.search_mode_set", I18n.get(getSearchMode(mainHandItem)));
         }
     }
 
