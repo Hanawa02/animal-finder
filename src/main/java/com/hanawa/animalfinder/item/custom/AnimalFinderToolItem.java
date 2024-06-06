@@ -2,6 +2,7 @@ package com.hanawa.animalfinder.item.custom;
 
 
 import com.hanawa.animalfinder.util.AnimalFinderModTags;
+import com.hanawa.animalfinder.util.CompoundTagUtil;
 import com.hanawa.animalfinder.util.ForgeExtraModTags;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -32,37 +33,46 @@ public class AnimalFinderToolItem extends Item {
     private final String MODE_ALL = "animalfinder.tool.search_mode.all";
 
     private final String STORAGE_KEY_MODE = "MODE";
-    
+    private final String STORAGE_KEY_INDEXED_ENTITIES = "INDEXED_ENTITIES";
+
     public AnimalFinderToolItem(Properties properties, int distance, int maxSlots ) {
         super(properties.stacksTo(1));
         this.distance = distance;
         this.maxSlots = maxSlots;
-        this.indexedEntities = new ArrayList<>();
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComnponents, TooltipFlag isAdvanced) {
-        String lastComponent = "";
-        String firstComponents = "";
+    public void appendHoverText(ItemStack item, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        List<String> registeredEntities = getRegisteredEntities(item);
 
-        if (indexedEntities.size() > 0) {
-            lastComponent = I18n.get(indexedEntities.get(indexedEntities.size() - 1));
+        tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.base"));
+
+        if (registeredEntities.isEmpty()) {
+            super.appendHoverText(item, level, tooltipComponents, isAdvanced);
+            return;
         }
 
-        if (indexedEntities.size() > 1) {
-            firstComponents = getTranslatedEntitiesName(indexedEntities.subList(0, indexedEntities.size() - 1));
+        String lastAnimal = I18n.get(registeredEntities.get(registeredEntities.size() - 1));
+
+        if (registeredEntities.size() == 1) {
+            tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.one_animal", lastAnimal));
+            super.appendHoverText(item, level, tooltipComponents, isAdvanced);
+            return;
         }
 
-        tooltipComnponents.add(
+        String firstAnimals = getTranslatedEntitiesName(registeredEntities.subList(0, registeredEntities.size() - 1));
+
+        tooltipComponents.add(
             Component.translatable(
-            "animalfinder.tool.tooltip",
-                firstComponents,
-                lastComponent
+            "animalfinder.tool.tooltip.more_animals",
+                firstAnimals,
+                lastAnimal
             )
         );
-        super.appendHoverText(stack, level, tooltipComnponents, isAdvanced);
+        super.appendHoverText(item, level, tooltipComponents, isAdvanced);
     }
 
+    /* Interactions Entrypoints */
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
         Player player = context.getPlayer();
@@ -83,99 +93,99 @@ public class AnimalFinderToolItem extends Item {
         ItemStack offSetHandItem = player.getOffhandItem();
         if (offSetHandItem.isEmpty() || !offSetHandItem.is(AnimalFinderModTags.Items.ANIMAL_FINDER_TOOL)) {
             executeAnimalSearch(context, player, mainHandItem);
-        } else {
-            executeSlotAttributionFromAnotherFinder(player);
         }
+        
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    public InteractionResult interactLivingEntity(ItemStack stack, Player playerIn, LivingEntity entity, InteractionHand hand) {
-        executeSlotAttribution(playerIn, entity);
-        return InteractionResult.SUCCESS;
-    }
-
-    private void executeSlotAttribution(Player player, LivingEntity entity) {
-        if (player == null) {
-            return;
+    public @NotNull InteractionResult interactLivingEntity(ItemStack item, @NotNull Player player, @NotNull LivingEntity entity, @NotNull InteractionHand hand) {
+        if (player.level().isClientSide()) {
+            return InteractionResult.PASS;
         }
 
-        if (indexedEntities.size() >= maxSlots) {
+        return executeSlotAttribution(player, entity);
+    }
+
+    /* Registered Entities */
+    private List<String> getRegisteredEntities(ItemStack item) {
+        CompoundTag tagCompound = item.getOrCreateTag();
+        return CompoundTagUtil.getStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES);
+    }
+
+    private void setRegisteredEntities(ItemStack item, List<String> entities) {
+        CompoundTag tagCompound = item.getOrCreateTag();
+        CompoundTagUtil.putStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES, entities);
+    }
+
+
+    /* Actions */
+
+    private InteractionResult executeSlotAttribution(Player player, LivingEntity entity) {
+        if (player == null) {
+            return InteractionResult.PASS;
+        }
+
+        ItemStack mainHandItem = player.getMainHandItem();
+        if (mainHandItem.isEmpty()) {
+            return InteractionResult.PASS;
+        }
+
+        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
+        if (registeredEntities.size() >= maxSlots) {
             sendMessage(player,"animalfinder.tool.message.full_index");
-            return;
+            return InteractionResult.PASS;
         }
 
         if (entity.getType().is(ForgeExtraModTags.EntityTypes.ANIMALS)) {
-            addEntityToSlottedAnimals(entity.getType().toString(), player);
-        }
-    }
-    
-    private void executeSlotAttributionFromAnotherFinder(Player player) {
-        if (player == null || indexedEntities.size() >= maxSlots) {
-            return;
+            addEntityToSlottedAnimals(entity.getType().toString(), player, mainHandItem, registeredEntities);
+            return InteractionResult.SUCCESS;
         }
 
-        ItemStack offHandItem = player.getOffhandItem();
-
-        if (offHandItem.isEmpty()) {
-            return;
-        }
-
-        if (offHandItem.is(AnimalFinderModTags.Items.ANIMAL_FINDER_TOOL)) {
-            List<String> entities = ((AnimalFinderToolItem) offHandItem.getItem()).indexedEntities;
-
-            for(String entity: entities) {
-                if (indexedEntities.size() >= maxSlots) {
-                    sendMessage(player, "animalfinder.tool.message.full_index");
-                    break;
-                }
-
-                addEntityToSlottedAnimals(entity, player);
-            }
-        }
+        return InteractionResult.PASS;
     }
 
     private void changeToolMode(Player player, ItemStack mainHandItem) {
-        CompoundTag tagCompound = mainHandItem.getTag();
-        String modeBeforeChange = "";
+        CompoundTag tagCompound = mainHandItem.getOrCreateTag();
 
-        if (tagCompound == null) {
-            tagCompound = new CompoundTag();
+        String modeBeforeChange = tagCompound.getString(STORAGE_KEY_MODE);
 
+        if (modeBeforeChange.isBlank()) {
             tagCompound.putString(STORAGE_KEY_MODE, MODE_ALL);
             modeBeforeChange = MODE_ALL;
-        } else {
-            modeBeforeChange = tagCompound.getString(STORAGE_KEY_MODE);
         }
 
-        if(indexedEntities.size() > 1){
+        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
+        
+        if(registeredEntities.size() > 1){
             String currentMode = tagCompound.getString(STORAGE_KEY_MODE);
-            int currentModeIndex = indexedEntities.indexOf(currentMode);
+            int currentModeIndex = registeredEntities.indexOf(currentMode);
 
-
-            if (currentModeIndex == indexedEntities.size() - 1) {
+            if (currentModeIndex == registeredEntities.size() - 1) {
                 tagCompound.putString(STORAGE_KEY_MODE, MODE_ALL);
             } else {
-                tagCompound.putString(STORAGE_KEY_MODE, indexedEntities.get(currentModeIndex + 1));
+                tagCompound.putString(STORAGE_KEY_MODE, registeredEntities.get(currentModeIndex + 1));
             }
         }
-
-        mainHandItem.setTag(tagCompound);
 
         if (!modeBeforeChange.equals(tagCompound.getString(STORAGE_KEY_MODE))) {
             sendMessage(player, "animalfinder.tool.message.search_mode_set", I18n.get(tagCompound.getString(STORAGE_KEY_MODE)));
         }
     }
 
-    private void addEntityToSlottedAnimals(String entity, Player player) {
-        if (entity != null && !indexedEntities.contains(entity)) {
-            indexedEntities.add(entity);
+
+    private void addEntityToSlottedAnimals(String entity, Player player, ItemStack item, List<String> registeredEntities) {
+        if (entity != null && !registeredEntities.contains(entity)) {
+            registeredEntities.add(entity);
+            setRegisteredEntities(item, registeredEntities);
             sendMessage(player,  "animalfinder.tool.message.animal_added_to_index", I18n.get(entity));
         }
     }
 
     private void executeAnimalSearch(UseOnContext context, Player player, ItemStack mainHandItem) {
-        if (indexedEntities.isEmpty()) {
+        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
+
+        if (registeredEntities.isEmpty()) {
             sendMessage(player, "animalfinder.tool.message.empty_index");
             return;
         }
@@ -184,7 +194,7 @@ public class AnimalFinderToolItem extends Item {
         sendMessage(
             player,
  "animalfinder.tool.message.searching",
-            getTranslatedEntitiesName(indexedEntities),
+            getTranslatedEntitiesName(registeredEntities),
             distance,
             formatVectorForMessage(searchingPosition.getCenter())
         );
@@ -205,23 +215,27 @@ public class AnimalFinderToolItem extends Item {
 
         BlockPos positionClicked = context.getClickedPos();
 
-
         AABB area = new AABB(
             positionClicked.getX() - distance, positionClicked.getY() - distance, positionClicked.getZ() - distance,
             positionClicked.getX() + distance, positionClicked.getY() + distance, positionClicked.getZ() + distance);
 
        return context.getLevel().getEntities(null, area);
-
     }
 
     private List<Entity> filterValidEntities(List<Entity> entities, ItemStack mainHandItem) {
         List<Entity> validEntities = new ArrayList<Entity>();
 
-        CompoundTag compoundTag = mainHandItem.getTag();
+        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
+
+        CompoundTag compoundTag = mainHandItem.getOrCreateTag();
         String search_mode = compoundTag.getString(STORAGE_KEY_MODE);
+        if (search_mode.isEmpty()) {
+            search_mode = MODE_ALL;
+        }
+        
         for(Entity entity: entities) {
             String entityType = entity.getType().toString();
-            if (search_mode.equals(MODE_ALL) && indexedEntities.contains(entityType)) {
+            if (search_mode.equals(MODE_ALL) && registeredEntities.contains(entityType)) {
                 validEntities.add(entity);
             } else if (search_mode.equals(entityType)) {
                 validEntities.add(entity);
@@ -249,7 +263,7 @@ public class AnimalFinderToolItem extends Item {
 
         if (entities.isEmpty()) {
             sendMessage(player, "animalfinder.tool.message.search_result_empty");
-        };
+        }
     }
 
     private void sendMessage(Player player, String messageKey, Object... pArgs) {

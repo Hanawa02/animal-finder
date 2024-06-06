@@ -12,5 +12,7 @@
   "animalfinder.tool.message.search_result_empty": "No animal was found.",
   "animalfinder.tool.message.search_mode_set": "Search mode was set to '%s'",
   "animalfinder.tool.search_mode.all": "All",
-  "animalfinder.tool.tooltip": "A tool that helps you find animals near you. Animals Included in the search are: %s, and %s."
+  "animalfinder.tool.tooltip.base": "A tool that helps you find animals near you.",
+  "animalfinder.tool.tooltip.one_animal": " Animals Included in the search are: %s.",
+  "animalfinder.tool.tooltip.more_animals": " Animals Included in the search are: %s, and %s."
 }
