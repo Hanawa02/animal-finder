@@ -1,6 +1,5 @@
 package com.hanawa.animalfinder.item.custom;
 
-
 import com.hanawa.animalfinder.util.AnimalFinderModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
 import com.hanawa.animalfinder.util.ForgeExtraModTags;
@@ -8,9 +7,11 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +36,15 @@ public class AnimalFinderToolItem extends Item {
     private final String STORAGE_KEY_MODE = "MODE";
     private final String STORAGE_KEY_INDEXED_ENTITIES = "INDEXED_ENTITIES";
 
+    enum TOOL_ACTIONS {
+        CHANGE_MODE,
+        REGISTER_ENTITY,
+        UNREGISTER_ENTITY,
+        REGISTER_ENTITY_FROM_ITEM,
+        UNREGISTER_ENTITY_FROM_ITEM,
+        SEARCH
+    }
+
     public AnimalFinderToolItem(Properties properties, int distance, int maxSlots ) {
         super(properties.stacksTo(1));
         this.distance = distance;
@@ -41,7 +52,7 @@ public class AnimalFinderToolItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack item, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+    public void appendHoverText(@NotNull ItemStack item, @Nullable Level level, List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         List<String> registeredEntities = getRegisteredEntities(item);
 
         tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.base"));
@@ -89,46 +100,56 @@ public class AnimalFinderToolItem extends Item {
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
         Player player = context.getPlayer();
+
         if (context.getLevel().isClientSide() || player == null) {
             return InteractionResult.PASS;
         }
 
         ItemStack mainHandItem = player.getMainHandItem();
+        ItemStack offSetHandItem = player.getOffhandItem();
+
         if (mainHandItem.isEmpty() || !mainHandItem.is(AnimalFinderModTags.Items.ANIMAL_FINDER_TOOL)) {
             return InteractionResult.PASS;
         }
 
-        if (player.isShiftKeyDown()) {
-            changeToolMode(player, mainHandItem);
-            return  InteractionResult.SUCCESS;
+        TOOL_ACTIONS action = TOOL_ACTIONS.SEARCH;
+        boolean isPlayerSneaking = player.isShiftKeyDown();
+        boolean userHasItemOnBothHands = !mainHandItem.isEmpty() && !offSetHandItem.isEmpty();
+
+        if (userHasItemOnBothHands) {
+            action = isPlayerSneaking ? TOOL_ACTIONS.UNREGISTER_ENTITY_FROM_ITEM : TOOL_ACTIONS.REGISTER_ENTITY_FROM_ITEM;
+        } else if (isPlayerSneaking) {
+            action = TOOL_ACTIONS.CHANGE_MODE;
         }
 
-        ItemStack offSetHandItem = player.getOffhandItem();
-        if (offSetHandItem.isEmpty() || !offSetHandItem.is(AnimalFinderModTags.Items.ANIMAL_FINDER_TOOL)) {
-            executeAnimalSearch(context, player, mainHandItem);
+        switch (action) {
+            case SEARCH -> executeAnimalSearch(context, player, mainHandItem);
+            case CHANGE_MODE -> changeToolSearchMode(player, mainHandItem);
+            case REGISTER_ENTITY_FROM_ITEM -> registerEntityFromItem(player, mainHandItem, offSetHandItem);
+            case UNREGISTER_ENTITY_FROM_ITEM -> unregisterEntityFromItem(player, mainHandItem, offSetHandItem);
         }
         
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    public @NotNull InteractionResult interactLivingEntity(ItemStack item, @NotNull Player player, @NotNull LivingEntity entity, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack item, @NotNull Player player, @NotNull LivingEntity entity, @NotNull InteractionHand hand) {
         if (player.level().isClientSide()) {
             return InteractionResult.PASS;
         }
 
-        return executeSlotAttribution(player, entity);
-    }
+        TOOL_ACTIONS action =  TOOL_ACTIONS.REGISTER_ENTITY;
 
-    /* Registered Entities */
-    private List<String> getRegisteredEntities(ItemStack item) {
-        CompoundTag tagCompound = item.getOrCreateTag();
-        return CompoundTagUtil.getStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES);
-    }
+        if (player.isShiftKeyDown()) {
+            action = TOOL_ACTIONS.UNREGISTER_ENTITY;
+        }
 
-    private void setRegisteredEntities(ItemStack item, List<String> entities) {
-        CompoundTag tagCompound = item.getOrCreateTag();
-        CompoundTagUtil.putStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES, entities);
+        switch (action) {
+            case REGISTER_ENTITY -> registerEntityFromLivingEntity(player, entity);
+            case UNREGISTER_ENTITY -> unregisterEntityFromLivingEntity(player, entity);
+        }
+
+        return InteractionResult.SUCCESS;
     }
 
     /* Search mode */
@@ -149,44 +170,12 @@ public class AnimalFinderToolItem extends Item {
         tagCompound.putString(STORAGE_KEY_MODE, mode);
     }
 
-    /* Actions */
-
-    private InteractionResult executeSlotAttribution(Player player, LivingEntity entity) {
-        if (player == null) {
-            return InteractionResult.PASS;
-        }
-
-        ItemStack mainHandItem = player.getMainHandItem();
-        if (mainHandItem.isEmpty()) {
-            return InteractionResult.PASS;
-        }
-
-        if (getSearchMode(mainHandItem).isBlank()) {
-            setSearchMode(mainHandItem, MODE_ALL);
-        }
-
-        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
-        if (registeredEntities.size() >= maxSlots) {
-            sendMessage(player,"animalfinder.tool.message.full_index");
-            return InteractionResult.PASS;
-        }
-
-        if (entity.getType().is(ForgeExtraModTags.EntityTypes.ANIMALS)) {
-            addEntityToSlottedAnimals(entity.getType().toString(), player, mainHandItem, registeredEntities);
-            return InteractionResult.SUCCESS;
-        }
-
-        return InteractionResult.PASS;
-    }
-
-    private void changeToolMode(Player player, ItemStack mainHandItem) {
-        CompoundTag tagCompound = mainHandItem.getOrCreateTag();
-
+    private void changeToolSearchMode(Player player, ItemStack mainHandItem) {
         String modeBeforeChange = getSearchMode(mainHandItem);
 
         List<String> registeredEntities = getRegisteredEntities(mainHandItem);
-        
-        if(registeredEntities.size() > 1){
+
+        if(!registeredEntities.isEmpty()){
             String currentMode = getSearchMode(mainHandItem);
             int currentModeIndex = registeredEntities.indexOf(currentMode);
 
@@ -202,20 +191,96 @@ public class AnimalFinderToolItem extends Item {
         }
     }
 
+    /* Registered Entities */
+    private List<String> getRegisteredEntities(ItemStack item) {
+        CompoundTag tagCompound = item.getOrCreateTag();
+        return CompoundTagUtil.getStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES);
+    }
 
-    private void addEntityToSlottedAnimals(String entity, Player player, ItemStack item, List<String> registeredEntities) {
-        if (entity != null && !registeredEntities.contains(entity)) {
-            registeredEntities.add(entity);
-            setRegisteredEntities(item, registeredEntities);
-            sendMessage(player,  "animalfinder.tool.message.animal_added_to_index", I18n.get(entity));
+    private void setRegisteredEntities(ItemStack item, List<String> entities) {
+        CompoundTag tagCompound = item.getOrCreateTag();
+        CompoundTagUtil.putStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES, entities);
+    }
+
+    private void registerEntity(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull String entityId) {
+        List<String> registeredEntities = getRegisteredEntities(searchToolItem);
+
+        if (registeredEntities.size() >= maxSlots) {
+            sendMessage(player,"animalfinder.tool.message.full_storage");
+            return;
+        }
+
+        EntityType<?> entity = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityId));
+
+        if (entity == null) {
+            sendMessage(player,"animalfinder.tool.message.entity_not_found");
+            return;
+        }
+
+        boolean isAnimal = entity.getTags().toList().contains(ForgeExtraModTags.EntityTypes.ANIMALS);
+
+        if (!isAnimal) {
+            sendMessage(player,"animalfinder.tool.message.not_an_animal");
+            return;
+        }
+
+        if (!registeredEntities.contains(entityId)) {
+            registeredEntities.add(entityId);
+            setRegisteredEntities(searchToolItem, registeredEntities);
+            sendMessage(player,  "animalfinder.tool.message.animal_registered", I18n.get(entityId));
         }
     }
 
+    private void unregisterEntity(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull String entityId) {
+        List<String> registeredEntities = getRegisteredEntities(searchToolItem);
+
+        if (registeredEntities.contains(entityId)) {
+            registeredEntities.remove(entityId);
+            setRegisteredEntities(searchToolItem, registeredEntities);
+            sendMessage(player,"animalfinder.tool.message.animal_unregistered", I18n.get(entityId));
+            return;
+        }
+
+        sendMessage(player,"animalfinder.tool.message.animal_not_registered");
+    }
+
+    private void registerEntityFromLivingEntity(@NotNull Player player, @NotNull LivingEntity entity) {
+        ItemStack mainHandItem = player.getMainHandItem();
+        if (mainHandItem.isEmpty()) {
+            return;
+        }
+
+        registerEntity(player, mainHandItem, entity.getType().toString());
+    }
+
+    private void unregisterEntityFromLivingEntity(Player player, LivingEntity entity) {
+        if (player == null) {
+            return;
+        }
+
+        ItemStack mainHandItem = player.getMainHandItem();
+        if (mainHandItem.isEmpty()) {
+            return;
+        }
+
+        unregisterEntity(player, mainHandItem, entity.getType().toString());
+    }
+
+    private void registerEntityFromItem(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull ItemStack item) {
+//        registerEntity(player, searchToolItem, entityId);
+    }
+
+    private void unregisterEntityFromItem(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull ItemStack item) {
+//        unregisterEntity(player, searchToolItem, entityId);
+    }
+
+
+    /* Search */
     private void executeAnimalSearch(UseOnContext context, Player player, ItemStack mainHandItem) {
         List<String> registeredEntities = getRegisteredEntities(mainHandItem);
 
         if (registeredEntities.isEmpty()) {
-            sendMessage(player, "animalfinder.tool.message.empty_index");
+            sendMessage(player, "animalfinder.tool.message.empty_storage");
             return;
         }
 
@@ -252,7 +317,7 @@ public class AnimalFinderToolItem extends Item {
     }
 
     private List<Entity> filterValidEntities(List<Entity> entities, ItemStack mainHandItem) {
-        List<Entity> validEntities = new ArrayList<Entity>();
+        List<Entity> validEntities = new ArrayList<>();
 
         List<String> registeredEntities = getRegisteredEntities(mainHandItem);
 
@@ -295,6 +360,7 @@ public class AnimalFinderToolItem extends Item {
         }
     }
 
+    /* Utils */
     private void sendMessage(Player player, String messageKey, Object... pArgs) {
         if (player != null ) {
             player.sendSystemMessage(Component.translatable(messageKey, pArgs));
