@@ -237,6 +237,12 @@ public class AnimalFinderToolItem extends Item {
         if (registeredEntities.contains(entityId)) {
             registeredEntities.remove(entityId);
             setRegisteredEntities(searchToolItem, registeredEntities);
+
+            // Resets search mode in case the mode was set for the removed animal
+            if (getSearchMode(searchToolItem).equals(entityId)) {
+                setSearchMode(searchToolItem, MODE_ALL);
+            }
+
             sendMessage(player,"animalfinder.tool.message.animal_unregistered", I18n.get(entityId));
             return;
         }
