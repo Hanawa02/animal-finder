@@ -8,6 +8,8 @@
   "animalfinder.tool.message.empty_storage": "No animals registered yet!",
   "animalfinder.tool.message.animal_registered": "'%s' registered to be searched.",
   "animalfinder.tool.message.animal_not_registered": "'%s' is not registered.",
+  "animalfinder.tool.message.animal_not_found": "Animal not found.",
+  "animalfinder.tool.message.not_an_animal": "Entity is not an Animal.",
   "animalfinder.tool.message.animal_unregistered": "'%s' removed from search.",
   "animalfinder.tool.message.searching": "Searching for %s in a %s radius starting from %s.",
   "animalfinder.tool.message.search_result_found": "'%s' found at coordinates %s.",
