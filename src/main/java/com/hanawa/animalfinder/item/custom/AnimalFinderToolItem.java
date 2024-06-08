@@ -39,10 +39,10 @@ public class AnimalFinderToolItem extends Item {
 
     enum TOOL_ACTIONS {
         CHANGE_MODE,
-        REGISTER_ENTITY,
-        UNREGISTER_ENTITY,
-        REGISTER_ENTITY_FROM_ITEM,
-        UNREGISTER_ENTITY_FROM_ITEM,
+        REGISTER_ANIMAL,
+        UNREGISTER_ANIMAL,
+        REGISTER_ANIMAL_FROM_ITEM,
+        UNREGISTER_ANIMAL_FROM_ITEM,
         SEARCH
     }
 
@@ -54,7 +54,7 @@ public class AnimalFinderToolItem extends Item {
 
     @Override
     public void appendHoverText(@NotNull ItemStack item, @Nullable Level level, List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
-        List<String> registeredEntities = getRegisteredEntities(item);
+        List<String> registeredAnimals = getRegisteredEntities(item);
 
         tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.base"));
         tooltipComponents.add(Component.literal("")); // line break
@@ -67,25 +67,25 @@ public class AnimalFinderToolItem extends Item {
             tooltipComponents.add(Component.literal("")); // line break
         }
 
-        if (registeredEntities.isEmpty()) {
+        if (registeredAnimals.isEmpty()) {
             tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.no_animal"));
 
             super.appendHoverText(item, level, tooltipComponents, isAdvanced);
             return;
         }
 
-        List<String> registeredEntitiesName = new ArrayList<>(registeredEntities.stream().map(I18n::get).toList());
-        Collections.sort(registeredEntitiesName);
+        List<String> registeredAnimalsName = new ArrayList<>(registeredAnimals.stream().map(I18n::get).toList());
+        Collections.sort(registeredAnimalsName);
 
-        String lastAnimal = I18n.get(registeredEntitiesName.get(registeredEntitiesName.size() - 1));
+        String lastAnimal = I18n.get(registeredAnimalsName.get(registeredAnimalsName.size() - 1));
 
-        if (registeredEntitiesName.size() == 1) {
+        if (registeredAnimalsName.size() == 1) {
             tooltipComponents.add(Component.translatable("animalfinder.tool.tooltip.one_animal", lastAnimal));
             super.appendHoverText(item, level, tooltipComponents, isAdvanced);
             return;
         }
 
-        String firstAnimals = String.join(", ", registeredEntitiesName.subList(0, registeredEntitiesName.size() - 1));
+        String firstAnimals = String.join(", ", registeredAnimalsName.subList(0, registeredAnimalsName.size() - 1));
 
         tooltipComponents.add(
             Component.translatable(
@@ -118,7 +118,7 @@ public class AnimalFinderToolItem extends Item {
         boolean userHasItemOnBothHands = !mainHandItem.isEmpty() && !offSetHandItem.isEmpty();
 
         if (userHasItemOnBothHands) {
-            action = isPlayerSneaking ? TOOL_ACTIONS.UNREGISTER_ENTITY_FROM_ITEM : TOOL_ACTIONS.REGISTER_ENTITY_FROM_ITEM;
+            action = isPlayerSneaking ? TOOL_ACTIONS.UNREGISTER_ANIMAL_FROM_ITEM : TOOL_ACTIONS.REGISTER_ANIMAL_FROM_ITEM;
         } else if (isPlayerSneaking) {
             action = TOOL_ACTIONS.CHANGE_MODE;
         }
@@ -126,28 +126,28 @@ public class AnimalFinderToolItem extends Item {
         switch (action) {
             case SEARCH -> executeAnimalSearch(context, player, mainHandItem);
             case CHANGE_MODE -> changeToolSearchMode(player, mainHandItem);
-            case REGISTER_ENTITY_FROM_ITEM -> registerEntityFromItem(player, mainHandItem, offSetHandItem);
-            case UNREGISTER_ENTITY_FROM_ITEM -> unregisterEntityFromItem(player, mainHandItem, offSetHandItem);
+            case REGISTER_ANIMAL_FROM_ITEM -> registerEntityFromItem(player, mainHandItem, offSetHandItem);
+            case UNREGISTER_ANIMAL_FROM_ITEM -> unregisterEntityFromItem(player, mainHandItem, offSetHandItem);
         }
         
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack item, @NotNull Player player, @NotNull LivingEntity entity, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack item, @NotNull Player player, @NotNull LivingEntity animal, @NotNull InteractionHand hand) {
         if (player.level().isClientSide()) {
             return InteractionResult.PASS;
         }
 
-        TOOL_ACTIONS action =  TOOL_ACTIONS.REGISTER_ENTITY;
+        TOOL_ACTIONS action =  TOOL_ACTIONS.REGISTER_ANIMAL;
 
         if (player.isShiftKeyDown()) {
-            action = TOOL_ACTIONS.UNREGISTER_ENTITY;
+            action = TOOL_ACTIONS.UNREGISTER_ANIMAL;
         }
 
         switch (action) {
-            case REGISTER_ENTITY -> registerEntityFromLivingEntity(player, entity);
-            case UNREGISTER_ENTITY -> unregisterEntityFromLivingEntity(player, entity);
+            case REGISTER_ANIMAL -> registerEntityFromLivingEntity(player, animal);
+            case UNREGISTER_ANIMAL -> unregisterEntityFromLivingEntity(player, animal);
         }
 
         return InteractionResult.SUCCESS;
@@ -174,16 +174,16 @@ public class AnimalFinderToolItem extends Item {
     private void changeToolSearchMode(Player player, ItemStack mainHandItem) {
         String modeBeforeChange = getSearchMode(mainHandItem);
 
-        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
+        List<String> registeredAnimals = getRegisteredEntities(mainHandItem);
 
-        if(!registeredEntities.isEmpty()){
+        if(!registeredAnimals.isEmpty()){
             String currentMode = getSearchMode(mainHandItem);
-            int currentModeIndex = registeredEntities.indexOf(currentMode);
+            int currentModeIndex = registeredAnimals.indexOf(currentMode);
 
-            if (currentModeIndex == registeredEntities.size() - 1) {
+            if (currentModeIndex == registeredAnimals.size() - 1) {
                 setSearchMode(mainHandItem, MODE_ALL);
             } else {
-                setSearchMode(mainHandItem, registeredEntities.get(currentModeIndex + 1));
+                setSearchMode(mainHandItem, registeredAnimals.get(currentModeIndex + 1));
             }
         }
 
@@ -203,64 +203,64 @@ public class AnimalFinderToolItem extends Item {
         CompoundTagUtil.putStringArray(tagCompound, STORAGE_KEY_INDEXED_ENTITIES, entities);
     }
 
-    private void registerEntity(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull String entityId) {
-        List<String> registeredEntities = getRegisteredEntities(searchToolItem);
+    private void registerEntity(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull String animalId) {
+        List<String> registeredAnimals = getRegisteredEntities(searchToolItem);
 
-        if (registeredEntities.size() >= maxSlots) {
+        if (registeredAnimals.size() >= maxSlots) {
             sendMessage(player,"animalfinder.tool.message.full_storage");
             return;
         }
 
-        EntityType<?> entity = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityId));
+        EntityType<?> animal = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(animalId));
 
-        if (entity == null) {
-            sendMessage(player,"animalfinder.tool.message.entity_not_found");
+        if (animal == null) {
+            sendMessage(player,"animalfinder.tool.message.animal_not_found");
             return;
         }
 
-        boolean isAnimal = entity.getTags().toList().contains(ForgeExtraModTags.EntityTypes.ANIMALS);
+        boolean isAnimal = animal.getTags().toList().contains(ForgeExtraModTags.EntityTypes.ANIMALS);
 
         if (!isAnimal) {
             sendMessage(player,"animalfinder.tool.message.not_an_animal");
             return;
         }
 
-        if (!registeredEntities.contains(entityId)) {
-            registeredEntities.add(entityId);
-            setRegisteredEntities(searchToolItem, registeredEntities);
-            sendMessage(player,  "animalfinder.tool.message.animal_registered", I18n.get(entityId));
+        if (!registeredAnimals.contains(animalId)) {
+            registeredAnimals.add(animalId);
+            setRegisteredEntities(searchToolItem, registeredAnimals);
+            sendMessage(player,  "animalfinder.tool.message.animal_registered", I18n.get(animalId));
         }
     }
 
-    private void unregisterEntity(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull String entityId) {
-        List<String> registeredEntities = getRegisteredEntities(searchToolItem);
+    private void unregisterEntity(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull String animalId) {
+        List<String> registeredAnimals = getRegisteredEntities(searchToolItem);
 
-        if (registeredEntities.contains(entityId)) {
-            registeredEntities.remove(entityId);
-            setRegisteredEntities(searchToolItem, registeredEntities);
+        if (registeredAnimals.contains(animalId)) {
+            registeredAnimals.remove(animalId);
+            setRegisteredEntities(searchToolItem, registeredAnimals);
 
             // Resets search mode in case the mode was set for the removed animal
-            if (getSearchMode(searchToolItem).equals(entityId)) {
+            if (getSearchMode(searchToolItem).equals(animalId)) {
                 setSearchMode(searchToolItem, MODE_ALL);
             }
 
-            sendMessage(player,"animalfinder.tool.message.animal_unregistered", I18n.get(entityId));
+            sendMessage(player,"animalfinder.tool.message.animal_unregistered", I18n.get(animalId));
             return;
         }
 
         sendMessage(player,"animalfinder.tool.message.animal_not_registered");
     }
 
-    private void registerEntityFromLivingEntity(@NotNull Player player, @NotNull LivingEntity entity) {
+    private void registerEntityFromLivingEntity(@NotNull Player player, @NotNull LivingEntity animal) {
         ItemStack mainHandItem = player.getMainHandItem();
         if (mainHandItem.isEmpty()) {
             return;
         }
 
-        registerEntity(player, mainHandItem, entity.getType().toString());
+        registerEntity(player, mainHandItem, animal.getType().toString());
     }
 
-    private void unregisterEntityFromLivingEntity(Player player, LivingEntity entity) {
+    private void unregisterEntityFromLivingEntity(Player player, LivingEntity animal) {
         if (player == null) {
             return;
         }
@@ -270,7 +270,7 @@ public class AnimalFinderToolItem extends Item {
             return;
         }
 
-        unregisterEntity(player, mainHandItem, entity.getType().toString());
+        unregisterEntity(player, mainHandItem, animal.getType().toString());
     }
 
     private void registerEntityFromItem(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull ItemStack item) {
@@ -285,9 +285,9 @@ public class AnimalFinderToolItem extends Item {
 
     /* Search */
     private void executeAnimalSearch(UseOnContext context, Player player, ItemStack mainHandItem) {
-        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
+        List<String> registeredAnimals = getRegisteredEntities(mainHandItem);
 
-        if (registeredEntities.isEmpty()) {
+        if (registeredAnimals.isEmpty()) {
             sendMessage(player, "animalfinder.tool.message.empty_storage");
             return;
         }
@@ -296,7 +296,7 @@ public class AnimalFinderToolItem extends Item {
         sendMessage(
             player,
  "animalfinder.tool.message.searching",
-            getTranslatedEntitiesName(registeredEntities),
+            getTranslatedEntitiesName(registeredAnimals),
             distance,
             formatVectorForMessage(searchingPosition.getCenter())
         );
@@ -327,7 +327,7 @@ public class AnimalFinderToolItem extends Item {
     private List<Entity> filterValidEntities(List<Entity> entities, ItemStack mainHandItem) {
         List<Entity> validEntities = new ArrayList<>();
 
-        List<String> registeredEntities = getRegisteredEntities(mainHandItem);
+        List<String> registeredAnimals = getRegisteredEntities(mainHandItem);
 
         CompoundTag compoundTag = mainHandItem.getOrCreateTag();
         String search_mode = compoundTag.getString(STORAGE_KEY_MODE);
@@ -335,12 +335,12 @@ public class AnimalFinderToolItem extends Item {
             search_mode = MODE_ALL;
         }
         
-        for(Entity entity: entities) {
-            String entityType = entity.getType().toString();
-            if (search_mode.equals(MODE_ALL) && registeredEntities.contains(entityType)) {
-                validEntities.add(entity);
-            } else if (search_mode.equals(entityType)) {
-                validEntities.add(entity);
+        for(Entity animal: entities) {
+            String animalType = animal.getType().toString();
+            if (search_mode.equals(MODE_ALL) && registeredAnimals.contains(animalType)) {
+                validEntities.add(animal);
+            } else if (search_mode.equals(animalType)) {
+                validEntities.add(animal);
             }
         }
 
@@ -348,8 +348,8 @@ public class AnimalFinderToolItem extends Item {
     }
 
     private void notifyUserAboutEntitiesFound(List<Entity> entities, Player player) {
-        for(Entity entity: entities) {
-            String animalName = entity.getType().getDescriptionId();
+        for(Entity animal: entities) {
+            String animalName = animal.getType().getDescriptionId();
 
             if (I18n.exists(animalName)) {
                 animalName = I18n.get(animalName);
@@ -359,7 +359,7 @@ public class AnimalFinderToolItem extends Item {
                 player,
     "animalfinder.tool.message.search_result_found",
                 animalName,
-                formatVectorForMessage(entity.trackingPosition())
+                formatVectorForMessage(animal.trackingPosition())
             );
         }
 
