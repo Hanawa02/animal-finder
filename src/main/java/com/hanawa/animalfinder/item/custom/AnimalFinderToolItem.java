@@ -3,6 +3,7 @@ package com.hanawa.animalfinder.item.custom;
 import com.hanawa.animalfinder.util.AnimalFinderModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
 import com.hanawa.animalfinder.util.ForgeExtraModTags;
+import com.hanawa.animalfinder.util.ItemToAnimalMap;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -273,13 +274,14 @@ public class AnimalFinderToolItem extends Item {
     }
 
     private void registerEntityFromItem(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull ItemStack item) {
-//        registerEntity(player, searchToolItem, entityId);
+        String animalId = ItemToAnimalMap.getInstance().getMap().get(item.getDescriptionId());
+        registerEntity(player, searchToolItem, animalId);
     }
 
     private void unregisterEntityFromItem(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull ItemStack item) {
-//        unregisterEntity(player, searchToolItem, entityId);
+        String animalId = ItemToAnimalMap.getInstance().getMap().get(item.getDescriptionId());
+        unregisterEntity(player, searchToolItem, animalId);
     }
-
 
     /* Search */
     private void executeAnimalSearch(UseOnContext context, Player player, ItemStack mainHandItem) {

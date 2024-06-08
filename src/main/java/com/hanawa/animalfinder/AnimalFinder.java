@@ -1,8 +1,11 @@
 package com.hanawa.animalfinder;
 
 import com.hanawa.animalfinder.item.AnimalFinderModItems;
+import com.hanawa.animalfinder.util.ItemToAnimalMap;
 import com.mojang.logging.LogUtils;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -51,15 +54,7 @@ public class AnimalFinder
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        // Some common setup code
-//        LOGGER.info("HELLO FROM COMMON SETUP");
-//
-//        if (Config.logDirtBlock)
-//            LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
-//
-//        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
-//
-//        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
+
     }
 
     // Add the example block item to the building blocks tab
@@ -72,16 +67,50 @@ public class AnimalFinder
             event.accept(AnimalFinderModItems.GOLD_ANIMAL_FINDER);
             event.accept(AnimalFinderModItems.DIAMOND_ANIMAL_FINDER);
         }
-
-
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
-
+        ItemToAnimalMap map = ItemToAnimalMap.getInstance();
+        
+        map.addEntry(Items.CLAY_BALL.getDescriptionId(), EntityType.AXOLOTL.getDescriptionId());
+        map.addEntry(Items.COBBLESTONE.getDescriptionId(), EntityType.BAT.getDescriptionId());
+        map.addEntry(Items.OAK_LEAVES.getDescriptionId(), EntityType.BEE.getDescriptionId());
+        map.addEntry(Items.SAND.getDescriptionId(), EntityType.CAMEL.getDescriptionId());
+        map.addEntry(Items.HAY_BLOCK.getDescriptionId(), EntityType.CAT.getDescriptionId());
+        map.addEntry(Items.SPIDER_EYE.getDescriptionId(), EntityType.CAVE_SPIDER.getDescriptionId());
+        map.addEntry(Items.FEATHER.getDescriptionId(), EntityType.CHICKEN.getDescriptionId());
+        map.addEntry(Items.COD.getDescriptionId(), EntityType.COD.getDescriptionId());
+        map.addEntry(Items.BEEF.getDescriptionId(), EntityType.COW.getDescriptionId());
+        map.addEntry(Items.COD.getDescriptionId(), EntityType.DOLPHIN.getDescriptionId());
+        map.addEntry(Items.CARROT.getDescriptionId(), EntityType.DONKEY.getDescriptionId());
+        map.addEntry(Items.CHICKEN.getDescriptionId(), EntityType.FOX.getDescriptionId());
+        map.addEntry(Items.LILY_PAD.getDescriptionId(), EntityType.FROG.getDescriptionId());
+        map.addEntry(Items.GLOW_INK_SAC.getDescriptionId(), EntityType.GLOW_SQUID.getDescriptionId());
+        map.addEntry(Items.MILK_BUCKET.getDescriptionId(), EntityType.GOAT.getDescriptionId());
+        map.addEntry(Items.LEATHER.getDescriptionId(), EntityType.HORSE.getDescriptionId());
+        map.addEntry(Items.WHITE_CARPET.getDescriptionId(), EntityType.LLAMA.getDescriptionId());
+        map.addEntry(Items.POTATO.getDescriptionId(), EntityType.MULE.getDescriptionId());
+        map.addEntry(Items.BAMBOO.getDescriptionId(), EntityType.PANDA.getDescriptionId());
+        map.addEntry(Items.COOKIE.getDescriptionId(), EntityType.PARROT.getDescriptionId());
+        map.addEntry(Items.PORKCHOP.getDescriptionId(), EntityType.PIG.getDescriptionId());
+        map.addEntry(Items.SALMON.getDescriptionId(), EntityType.POLAR_BEAR.getDescriptionId());
+        map.addEntry(Items.PUFFERFISH.getDescriptionId(), EntityType.PUFFERFISH.getDescriptionId());
+        map.addEntry(Items.RABBIT_HIDE.getDescriptionId(), EntityType.RABBIT.getDescriptionId());
+        map.addEntry(Items.KELP.getDescriptionId(), EntityType.SALMON.getDescriptionId());
+        map.addEntry(Items.MUTTON.getDescriptionId(), EntityType.SHEEP.getDescriptionId());
+        map.addEntry(Items.WHITE_WOOL.getDescriptionId(), EntityType.SHEEP.getDescriptionId());
+        map.addEntry(Items.STONE.getDescriptionId(), EntityType.SILVERFISH.getDescriptionId());
+        map.addEntry(Items.STRING.getDescriptionId(), EntityType.SPIDER.getDescriptionId());
+        map.addEntry(Items.INK_SAC.getDescriptionId(), EntityType.SQUID.getDescriptionId());
+        map.addEntry(Items.WATER_BUCKET.getDescriptionId(), EntityType.TADPOLE.getDescriptionId());
+        map.addEntry(Items.TROPICAL_FISH.getDescriptionId(), EntityType.TROPICAL_FISH.getDescriptionId());
+        map.addEntry(Items.SEAGRASS.getDescriptionId(), EntityType.TURTLE.getDescriptionId());
+        map.addEntry(Items.MUTTON.getDescriptionId(), EntityType.WOLF.getDescriptionId());
     }
+
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
