@@ -1,7 +1,6 @@
 package com.hanawa.animalfinder;
 
 import com.hanawa.animalfinder.item.ModItems;
-import com.hanawa.animalfinder.particle.ModParticles;
 import com.hanawa.animalfinder.util.ItemToAnimalMap;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.EntityType;
@@ -33,7 +32,6 @@ public class AnimalFinder
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModItems.register(modEventBus);
-        ModParticles.register(modEventBus);
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
