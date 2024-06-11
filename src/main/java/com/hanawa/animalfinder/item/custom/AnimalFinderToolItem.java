@@ -27,11 +27,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AnimalFinderToolItem extends Item {
     private final int distance;
     private final int maxSlots;
 
+    private final int MAX_RESULTS_PER_ANIMAL = 3;
     private final String MODE_ALL = "animalfinder.tool.search_mode.all";
 
     private final String STORAGE_KEY_MODE = "MODE";
@@ -174,7 +176,7 @@ public class AnimalFinderToolItem extends Item {
     private void changeToolSearchMode(Player player, ItemStack mainHandItem) {
         String modeBeforeChange = getSearchMode(mainHandItem);
 
-        List<String> registeredAnimals = getRegisteredEntities(mainHandItem);
+        List<String> registeredAnimals =  getRegisteredEntities(mainHandItem);
 
         if(!registeredAnimals.isEmpty()){
             String currentMode = getSearchMode(mainHandItem);
@@ -325,9 +327,9 @@ public class AnimalFinderToolItem extends Item {
     }
 
     private List<Entity> filterValidEntities(List<Entity> entities, ItemStack mainHandItem) {
-        List<Entity> validEntities = new ArrayList<>();
+        Map<String, List<Entity>> validEntities = new HashMap<>();
 
-        List<String> registeredAnimals = getRegisteredEntities(mainHandItem);
+        List<String> registeredAnimals = new ArrayList<>(getRegisteredEntities(mainHandItem));
 
         CompoundTag compoundTag = mainHandItem.getOrCreateTag();
         String search_mode = compoundTag.getString(STORAGE_KEY_MODE);
@@ -337,14 +339,29 @@ public class AnimalFinderToolItem extends Item {
         
         for(Entity animal: entities) {
             String animalType = animal.getType().toString();
+            boolean addAnimal = false;
             if (search_mode.equals(MODE_ALL) && registeredAnimals.contains(animalType)) {
-                validEntities.add(animal);
+                addAnimal = true;
             } else if (search_mode.equals(animalType)) {
-                validEntities.add(animal);
+                addAnimal = true;
             }
+
+            if (addAnimal) {
+                List<Entity> animalsOfTypeFound = validEntities.get(animalType);
+                if (animalsOfTypeFound == null) {
+                    animalsOfTypeFound = new ArrayList<>();
+                }
+
+                if (animalsOfTypeFound.size() >= MAX_RESULTS_PER_ANIMAL) {
+                    continue;
+                }
+                animalsOfTypeFound.add(animal);
+                validEntities.put(animalType, animalsOfTypeFound);
+            }
+
         }
 
-        return validEntities;
+        return validEntities.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     private void notifyUserAboutEntitiesFound(List<Entity> entities, Player player) {
