@@ -4,9 +4,13 @@
   "item.animalfinder.iron_animal_finder": "Iron Animal Finder",
   "item.animalfinder.gold_animal_finder": "Gold Animal Finder",
   "item.animalfinder.diamond_animal_finder": "Diamond Animal Finder",
-  "animalfinder.tool.message.full_index": "Tool storage is full! No more animals can be registered.",
-  "animalfinder.tool.message.empty_index": "No animals registered for the search! Register an animal to start the search",
-  "animalfinder.tool.message.animal_added_to_index": "Animal registered: %s",
+  "animalfinder.tool.message.full_storage": "Tool storage is full! No more animals can be registered.",
+  "animalfinder.tool.message.empty_storage": "No animals registered yet!",
+  "animalfinder.tool.message.animal_registered": "'%s' registered to be searched.",
+  "animalfinder.tool.message.animal_not_registered": "'%s' is not registered.",
+  "animalfinder.tool.message.animal_not_found": "Animal not found.",
+  "animalfinder.tool.message.not_an_animal": "Entity is not an Animal.",
+  "animalfinder.tool.message.animal_unregistered": "'%s' removed from search.",
   "animalfinder.tool.message.searching": "Searching for %s in a %s radius starting from %s.",
   "animalfinder.tool.message.search_result_found": "'%s' found at coordinates %s.",
   "animalfinder.tool.message.search_result_empty": "No animal was found.",
@@ -16,5 +20,5 @@
   "animalfinder.tool.tooltip.no_animal": "No animals registered for the search!",
   "animalfinder.tool.tooltip.one_animal": "Animals included in the search: %s.",
   "animalfinder.tool.tooltip.more_animals": "Animals included in the search: %s, and %s.",
-  "animalfinder.tool.tooltip.search_mode": "The current search mode is: %s"
+  "animalfinder.tool.tooltip.search_mode": "The current search mode is: %s."
 }

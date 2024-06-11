@@ -1,8 +1,7 @@
 package com.hanawa.animalfinder.datagen;
 
 
-import com.hanawa.animalfinder.AnimalFinder;
-import com.hanawa.animalfinder.item.AnimalFinderModItems;
+import com.hanawa.animalfinder.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -23,11 +22,11 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(@NotNull RecipeOutput recipeOutput) {
-        finderToolRecipe(recipeOutput, AnimalFinderModItems.BASIC_ANIMAL_FINDER.get(), Items.COMPASS, ItemTags.PLANKS, Tags.Items.INGOTS_COPPER);
-        finderToolRecipe(recipeOutput, AnimalFinderModItems.COPPER_ANIMAL_FINDER.get(), AnimalFinderModItems.BASIC_ANIMAL_FINDER.get(), Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_IRON);
-        finderToolRecipe(recipeOutput, AnimalFinderModItems.IRON_ANIMAL_FINDER.get(), AnimalFinderModItems.COPPER_ANIMAL_FINDER.get(), Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_GOLD);
-        finderToolRecipe(recipeOutput, AnimalFinderModItems.GOLD_ANIMAL_FINDER.get(), AnimalFinderModItems.IRON_ANIMAL_FINDER.get(), Tags.Items.INGOTS_GOLD, Tags.Items.GEMS_DIAMOND);
-        finderToolRecipe(recipeOutput, AnimalFinderModItems.DIAMOND_ANIMAL_FINDER.get(), AnimalFinderModItems.GOLD_ANIMAL_FINDER.get(), Tags.Items.GEMS_DIAMOND, Tags.Items.INGOTS_NETHERITE);
+        finderToolRecipe(recipeOutput, ModItems.BASIC_ANIMAL_FINDER.get(), Items.COMPASS, ItemTags.PLANKS, Tags.Items.INGOTS_COPPER);
+        finderToolRecipe(recipeOutput, ModItems.COPPER_ANIMAL_FINDER.get(), ModItems.BASIC_ANIMAL_FINDER.get(), Tags.Items.INGOTS_COPPER, Tags.Items.INGOTS_IRON);
+        finderToolRecipe(recipeOutput, ModItems.IRON_ANIMAL_FINDER.get(), ModItems.COPPER_ANIMAL_FINDER.get(), Tags.Items.INGOTS_IRON, Tags.Items.INGOTS_GOLD);
+        finderToolRecipe(recipeOutput, ModItems.GOLD_ANIMAL_FINDER.get(), ModItems.IRON_ANIMAL_FINDER.get(), Tags.Items.INGOTS_GOLD, Tags.Items.GEMS_DIAMOND);
+        finderToolRecipe(recipeOutput, ModItems.DIAMOND_ANIMAL_FINDER.get(), ModItems.GOLD_ANIMAL_FINDER.get(), Tags.Items.GEMS_DIAMOND, Tags.Items.INGOTS_NETHERITE);
     }
 
 

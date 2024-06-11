@@ -2,8 +2,8 @@ package com.hanawa.animalfinder.datagen;
 
 
 import com.hanawa.animalfinder.AnimalFinder;
-import com.hanawa.animalfinder.item.AnimalFinderModItems;
-import com.hanawa.animalfinder.util.AnimalFinderModTags;
+import com.hanawa.animalfinder.item.ModItems;
+import com.hanawa.animalfinder.tag.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
@@ -20,11 +20,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(AnimalFinderModTags.Items.ANIMAL_FINDER_TOOL)
-            .add(AnimalFinderModItems.BASIC_ANIMAL_FINDER.get())
-            .add(AnimalFinderModItems.COPPER_ANIMAL_FINDER.get())
-            .add(AnimalFinderModItems.IRON_ANIMAL_FINDER.get())
-            .add(AnimalFinderModItems.GOLD_ANIMAL_FINDER.get())
-            .add(AnimalFinderModItems.DIAMOND_ANIMAL_FINDER.get());
+        this.tag(ModTags.Items.ANIMAL_FINDER_TOOL)
+            .add(ModItems.BASIC_ANIMAL_FINDER.get())
+            .add(ModItems.COPPER_ANIMAL_FINDER.get())
+            .add(ModItems.IRON_ANIMAL_FINDER.get())
+            .add(ModItems.GOLD_ANIMAL_FINDER.get())
+            .add(ModItems.DIAMOND_ANIMAL_FINDER.get());
     }
 }
