@@ -1,8 +1,8 @@
 package com.hanawa.animalfinder.item.custom;
 
-import com.hanawa.animalfinder.util.AnimalFinderModTags;
+import com.hanawa.animalfinder.tag.ModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
-import com.hanawa.animalfinder.util.ForgeExtraModTags;
+import com.hanawa.animalfinder.tag.ForgeExtraModTags;
 import com.hanawa.animalfinder.util.ItemToAnimalMap;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AnimalFinderToolItem extends Item {
+public class ItemAnimalFinder extends Item {
     private final int distance;
     private final int maxSlots;
 
@@ -48,7 +48,7 @@ public class AnimalFinderToolItem extends Item {
         SEARCH
     }
 
-    public AnimalFinderToolItem(Properties properties, int distance, int maxSlots ) {
+    public ItemAnimalFinder(Properties properties, int distance, int maxSlots ) {
         super(properties.stacksTo(1));
         this.distance = distance;
         this.maxSlots = maxSlots;
@@ -111,7 +111,7 @@ public class AnimalFinderToolItem extends Item {
         ItemStack mainHandItem = player.getMainHandItem();
         ItemStack offSetHandItem = player.getOffhandItem();
 
-        if (mainHandItem.isEmpty() || !mainHandItem.is(AnimalFinderModTags.Items.ANIMAL_FINDER_TOOL)) {
+        if (mainHandItem.isEmpty() || !mainHandItem.is(ModTags.Items.ANIMAL_FINDER_TOOL)) {
             return InteractionResult.PASS;
         }
 

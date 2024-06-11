@@ -1,7 +1,7 @@
 package com.hanawa.animalfinder.datagen;
 
 import com.hanawa.animalfinder.AnimalFinder;
-import com.hanawa.animalfinder.item.AnimalFinderModItems;
+import com.hanawa.animalfinder.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -17,11 +17,11 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        simpleItem(AnimalFinderModItems.BASIC_ANIMAL_FINDER);
-        simpleItem(AnimalFinderModItems.COPPER_ANIMAL_FINDER);
-        simpleItem(AnimalFinderModItems.IRON_ANIMAL_FINDER);
-        simpleItem(AnimalFinderModItems.GOLD_ANIMAL_FINDER);
-        simpleItem(AnimalFinderModItems.DIAMOND_ANIMAL_FINDER);
+        simpleItem(ModItems.BASIC_ANIMAL_FINDER);
+        simpleItem(ModItems.COPPER_ANIMAL_FINDER);
+        simpleItem(ModItems.IRON_ANIMAL_FINDER);
+        simpleItem(ModItems.GOLD_ANIMAL_FINDER);
+        simpleItem(ModItems.DIAMOND_ANIMAL_FINDER);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

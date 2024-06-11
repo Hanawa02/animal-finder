@@ -1,5 +1,6 @@
 package com.hanawa.animalfinder.util;
 
+import com.hanawa.animalfinder.tag.ForgeExtraModTags;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
