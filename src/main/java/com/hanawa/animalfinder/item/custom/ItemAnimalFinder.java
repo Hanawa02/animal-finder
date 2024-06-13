@@ -4,6 +4,7 @@ import com.hanawa.animalfinder.tag.ModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
 import com.hanawa.animalfinder.tag.ForgeExtraModTags;
 import com.hanawa.animalfinder.util.ItemToAnimalMap;
+import com.hanawa.animalfinder.util.TimeOut;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +35,7 @@ public class ItemAnimalFinder extends Item {
     private final int maxSlots;
 
     private final int MAX_RESULTS_PER_ANIMAL = 3;
+    private final int ANIMAL_GLOW_DURATION_MS = 30000;
     private final String MODE_ALL = "animalfinder.tool.search_mode.all";
 
     private final String STORAGE_KEY_MODE = "MODE";
@@ -355,6 +357,7 @@ public class ItemAnimalFinder extends Item {
                 if (animalsOfTypeFound.size() >= MAX_RESULTS_PER_ANIMAL) {
                     continue;
                 }
+
                 animalsOfTypeFound.add(animal);
                 validEntities.put(animalType, animalsOfTypeFound);
             }
@@ -365,7 +368,15 @@ public class ItemAnimalFinder extends Item {
     }
 
     private void notifyUserAboutEntitiesFound(List<Entity> entities, Player player) {
+        TimeOut.getInstance().setTimeout(() -> {
+            for(Entity animal: entities) {
+                animal.setGlowingTag(false);
+            }
+        }, ANIMAL_GLOW_DURATION_MS);
+
         for(Entity animal: entities) {
+            animal.setGlowingTag(true);
+
             String animalName = animal.getType().getDescriptionId();
 
             if (I18n.exists(animalName)) {
