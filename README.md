@@ -10,8 +10,10 @@ The mod now has the following features:
 - `register animal` for search by using the tool while holding another item on the offset hand
     - if done **while sneaking**, the animal will be unregistered from the tool
     - the item is not consumed
-- `search` for animal by using the tool on a block on air
-    - now only returns the 3 closest animal of each type
+- `search` for animal by using the tool on a block
+    - applies a glowing effect to the animals found
+      - the glowing effect lasts for 20 seconds, searching again during this time will not reset the time
+    - the search is limited to the  5 closest animal of each type
 
 
 ### List of vanilla animals that can be searched for

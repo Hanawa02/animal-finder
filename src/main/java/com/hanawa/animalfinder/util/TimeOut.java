@@ -5,7 +5,7 @@ import java.util.TimerTask;
 
 public class TimeOut {
 
-    Timer timer;
+    private final Timer timer;
     private static TimeOut INSTANCE;
 
     private TimeOut() {
@@ -27,7 +27,6 @@ public class TimeOut {
             }
         };
 
-        Timer timer = new Timer("Timer");
         timer.schedule(task, delay);
     }
 }
