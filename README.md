@@ -12,7 +12,7 @@ The mod now has the following features:
     - the item is not consumed
 - `search` for animal by using the tool on a block
     - applies a glowing effect to the animals found
-      - the glowing effect lasts for 20 seconds, searching again during this time will not reset the time
+      - the glowing effect lasts for 20 seconds, searching again during this time will reset the time
     - the search is limited to the  5 closest animal of each type
 
 

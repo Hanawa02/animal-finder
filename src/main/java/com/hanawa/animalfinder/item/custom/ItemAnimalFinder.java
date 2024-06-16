@@ -4,7 +4,7 @@ import com.hanawa.animalfinder.tag.ModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
 import com.hanawa.animalfinder.tag.ForgeExtraModTags;
 import com.hanawa.animalfinder.util.ItemToAnimalMap;
-import com.hanawa.animalfinder.util.TimeOut;
+import com.hanawa.animalfinder.util.GlowingHelper;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -359,34 +359,28 @@ public class ItemAnimalFinder extends Item {
         int ANIMAL_GLOW_DURATION_MS = 20000;
 
         List<Entity> entities = entitiesMap.values().stream().flatMap(Collection::stream).toList();
-        // Removes glowing effects after 20 seconds
-        TimeOut.getInstance().setTimeout(() -> {
-            for(Entity animal: entities) {
-                animal.setGlowingTag(false);
-            }
-        }, ANIMAL_GLOW_DURATION_MS);
 
+        if (entities.isEmpty()) {
+            sendMessage(player, "animalfinder.tool.message.search_result_empty");
+            return;
+        }
+
+        List<String> searchResult = new ArrayList<>();
         for(Map.Entry<String, List<Entity>> entry: entitiesMap.entrySet()) {
+
             String animalName = entry.getKey();
             List<Entity> animals = entry.getValue();
+
+            animals.forEach(animal -> GlowingHelper.getInstance().triggerGlowing(animal, ANIMAL_GLOW_DURATION_MS));
 
             if (I18n.exists(animalName)) {
                 animalName = I18n.get(animalName);
             }
 
-            sendMessage(
-                player,
-    "animalfinder.tool.message.search_result_found",
-                animals.size(),
-                animalName
-            );
-
-            animals.forEach(animal -> animal.setGlowingTag(true));
+            searchResult.add(String.format("%s: %d", animalName, animals.size()));
         }
+        sendMessage(player, "animalfinder.tool.message.search_result_found", String.join(", ", searchResult));
 
-        if (entities.isEmpty()) {
-            sendMessage(player, "animalfinder.tool.message.search_result_empty");
-        }
     }
 
     /* Utils */
@@ -399,6 +393,6 @@ public class ItemAnimalFinder extends Item {
     private String getTranslatedEntitiesName(List<String> entities) {
         List<String> entitiesName = new ArrayList<>(entities.stream().map(I18n::get).toList());
         Collections.sort(entitiesName);
-        return  String.join(", ", entitiesName);
+        return  String.join(" ", entitiesName);
     }
 }
