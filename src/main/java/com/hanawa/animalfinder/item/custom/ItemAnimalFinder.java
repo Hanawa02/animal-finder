@@ -4,8 +4,8 @@ import com.hanawa.animalfinder.tag.ModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
 import com.hanawa.animalfinder.tag.ForgeExtraModTags;
 import com.hanawa.animalfinder.util.ItemToAnimalMap;
+import com.hanawa.animalfinder.util.GlowingHelper;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -27,13 +27,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ItemAnimalFinder extends Item {
     private final int distance;
     private final int maxSlots;
 
-    private final int MAX_RESULTS_PER_ANIMAL = 3;
     private final String MODE_ALL = "animalfinder.tool.search_mode.all";
 
     private final String STORAGE_KEY_MODE = "MODE";
@@ -103,8 +101,9 @@ public class ItemAnimalFinder extends Item {
     @Override
     public @NotNull InteractionResult useOn(@NotNull UseOnContext context) {
         Player player = context.getPlayer();
+        Level level = context.getLevel();
 
-        if (context.getLevel().isClientSide() || player == null) {
+        if (level.isClientSide() || player == null) {
             return InteractionResult.PASS;
         }
 
@@ -126,7 +125,7 @@ public class ItemAnimalFinder extends Item {
         }
 
         switch (action) {
-            case SEARCH -> executeAnimalSearch(context, player, mainHandItem);
+            case SEARCH -> executeAnimalSearch(level, context.getClickLocation(), player, mainHandItem);
             case CHANGE_MODE -> changeToolSearchMode(player, mainHandItem);
             case REGISTER_ANIMAL_FROM_ITEM -> registerEntityFromItem(player, mainHandItem, offSetHandItem);
             case UNREGISTER_ANIMAL_FROM_ITEM -> unregisterEntityFromItem(player, mainHandItem, offSetHandItem);
@@ -286,7 +285,7 @@ public class ItemAnimalFinder extends Item {
     }
 
     /* Search */
-    private void executeAnimalSearch(UseOnContext context, Player player, ItemStack mainHandItem) {
+    private void executeAnimalSearch(Level level, Vec3 searchCenter, Player player, ItemStack mainHandItem) {
         List<String> registeredAnimals = getRegisteredEntities(mainHandItem);
 
         if (registeredAnimals.isEmpty()) {
@@ -294,39 +293,29 @@ public class ItemAnimalFinder extends Item {
             return;
         }
 
-        BlockPos searchingPosition = context.getClickedPos();
         sendMessage(
             player,
  "animalfinder.tool.message.searching",
             getTranslatedEntitiesName(registeredAnimals),
-            distance,
-            formatVectorForMessage(searchingPosition.getCenter())
+            distance
         );
 
-        List<Entity> entitiesFound = getEntities(context);
-        if (entitiesFound == null) {
-            return;
-        }
+        List<Entity> entitiesFound = getEntities(level, searchCenter);
 
-        List<Entity> animalsFound = filterValidEntities(entitiesFound, mainHandItem);
+        player.getCooldowns().addCooldown(this, 30);
+        Map<String, List<Entity>> animalsFound = filterValidEntities(entitiesFound, mainHandItem);
         notifyUserAboutEntitiesFound(animalsFound, player);
     }
 
-    private List<Entity> getEntities(UseOnContext context) {
-        if(context.getLevel().isClientSide()) {
-            return null;
-        }
-
-        BlockPos positionClicked = context.getClickedPos();
-
+    private List<Entity> getEntities(Level level, Vec3 fromPosition) {
         AABB area = new AABB(
-            positionClicked.getX() - distance, positionClicked.getY() - distance, positionClicked.getZ() - distance,
-            positionClicked.getX() + distance, positionClicked.getY() + distance, positionClicked.getZ() + distance);
+            fromPosition.x - distance, fromPosition.y - distance, fromPosition.z - distance,
+            fromPosition.x + distance, fromPosition.y + distance, fromPosition.z + distance);
 
-       return context.getLevel().getEntities(null, area);
+       return level.getEntities(null, area);
     }
 
-    private List<Entity> filterValidEntities(List<Entity> entities, ItemStack mainHandItem) {
+    private Map<String, List<Entity>> filterValidEntities(List<Entity> entities, ItemStack mainHandItem) {
         Map<String, List<Entity>> validEntities = new HashMap<>();
 
         List<String> registeredAnimals = new ArrayList<>(getRegisteredEntities(mainHandItem));
@@ -352,37 +341,46 @@ public class ItemAnimalFinder extends Item {
                     animalsOfTypeFound = new ArrayList<>();
                 }
 
+                int MAX_RESULTS_PER_ANIMAL = 5;
                 if (animalsOfTypeFound.size() >= MAX_RESULTS_PER_ANIMAL) {
                     continue;
                 }
+
                 animalsOfTypeFound.add(animal);
                 validEntities.put(animalType, animalsOfTypeFound);
             }
 
         }
 
-        return validEntities.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        return validEntities;
     }
 
-    private void notifyUserAboutEntitiesFound(List<Entity> entities, Player player) {
-        for(Entity animal: entities) {
-            String animalName = animal.getType().getDescriptionId();
+    private void notifyUserAboutEntitiesFound(Map<String, List<Entity>> entitiesMap, Player player) {
+        int ANIMAL_GLOW_DURATION_MS = 20000;
+
+        List<Entity> entities = entitiesMap.values().stream().flatMap(Collection::stream).toList();
+
+        if (entities.isEmpty()) {
+            sendMessage(player, "animalfinder.tool.message.search_result_empty");
+            return;
+        }
+
+        List<String> searchResult = new ArrayList<>();
+        for(Map.Entry<String, List<Entity>> entry: entitiesMap.entrySet()) {
+
+            String animalName = entry.getKey();
+            List<Entity> animals = entry.getValue();
+
+            animals.forEach(animal -> GlowingHelper.getInstance().triggerGlowing(animal, ANIMAL_GLOW_DURATION_MS));
 
             if (I18n.exists(animalName)) {
                 animalName = I18n.get(animalName);
             }
 
-            sendMessage(
-                player,
-    "animalfinder.tool.message.search_result_found",
-                animalName,
-                formatVectorForMessage(animal.trackingPosition())
-            );
+            searchResult.add(String.format("%s: %d", animalName, animals.size()));
         }
+        sendMessage(player, "animalfinder.tool.message.search_result_found", String.join(", ", searchResult));
 
-        if (entities.isEmpty()) {
-            sendMessage(player, "animalfinder.tool.message.search_result_empty");
-        }
     }
 
     /* Utils */
@@ -392,13 +390,9 @@ public class ItemAnimalFinder extends Item {
         }
     }
 
-    private String formatVectorForMessage(Vec3 vector) {
-        return String.format("(X: %.0f, Y: %.0f, Z: %.0f)", vector.x, vector.y, vector.z);
-    }
-
     private String getTranslatedEntitiesName(List<String> entities) {
         List<String> entitiesName = new ArrayList<>(entities.stream().map(I18n::get).toList());
         Collections.sort(entitiesName);
-        return  String.join(", ", entitiesName);
+        return  String.join(" ", entitiesName);
     }
 }
