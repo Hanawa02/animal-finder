@@ -30,9 +30,7 @@ jobs:
     steps:
       - name: Debug Info
         run: |
-          tag_name=${{ needs.get-tag.outputs.NAME }} |
-          ref_name=${{ github.ref_name }} |
-          echo "tag_name: .$tag_name. --- ref_name: .$ref_name."
+          echo "tag_name: .${{ needs.get-tag.outputs.NAME }}. ref_name: .${{ github.ref_name }}."
 #      - name: Checkout code
 #        uses: actions/checkout@v4
 #        with:
