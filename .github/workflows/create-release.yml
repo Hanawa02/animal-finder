@@ -13,7 +13,7 @@ jobs:
       name: ${{ steps.get-tag.name }}
     steps:
       - id: get-tag
-        run: echo ::set-output name=NAME::${GITHUB_REF/refs\/tags\//}
+        run: echo "NAME=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
 
   build-gradle-project:
     uses: ./.github/workflows/build-gradle-project.yml
@@ -24,6 +24,7 @@ jobs:
   create-release:
     needs:
       - build-gradle-project
+      - get-tag
     name: Create Release
     runs-on: ubuntu-latest
     steps:
