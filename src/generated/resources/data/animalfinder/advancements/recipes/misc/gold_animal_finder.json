@@ -20,8 +20,8 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_connector_net.minecraft.tags.TagKey"
+      "has_connector_net.minecraft.tags.TagKey",
+      "has_the_recipe"
     ]
   ],
   "rewards": {
