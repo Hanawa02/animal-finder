@@ -10,7 +10,6 @@ jobs:
     uses: ./.github/workflows/build-gradle-project.yml
     with:
       upload-artifacts: true
-      checkout-ref: ${{ needs.get-tag.outputs.NAME }}
 
   create-release:
     needs:
