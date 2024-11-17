@@ -2,11 +2,6 @@ name: Gradle Dependency Submission
 
 on:
   workflow_call:
-    inputs:
-      checkout-ref:
-        required: false
-        type: string
-        default: ${{ github.event.repository.default_branch }}
 
 jobs:
   dependency-submission:
@@ -15,7 +10,7 @@ jobs:
       - name: Checkout project sources
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.checkout-ref }}
+          ref: ${{ github.ref_name }}
 
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@v3

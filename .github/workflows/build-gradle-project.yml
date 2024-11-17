@@ -7,10 +7,6 @@ on:
         required: false
         type: boolean
         default: false
-      checkout-ref:
-        required: false
-        type: string
-        default: ${{ github.event.repository.default_branch }}
   push:
     branches:
       - '**'
@@ -19,14 +15,10 @@ jobs:
   build-gradle-project:
     runs-on: ubuntu-latest
     steps:
-    - name: Debug Info
-      run: |
-        echo "ref_name: .${{ github.ref_name }}. checkout_ref: .${{ inputs.checkout-ref }}. default_branch: .${{github.event.repository.default_branch }}."
-
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.checkout-ref }}
+        ref: ${{ github.ref_name }}
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
