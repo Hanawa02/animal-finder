@@ -23,7 +23,8 @@ jobs:
       run: |
         checkout_ref=${{  inputs.checkout-ref }} |
         ref_name=${{ github.ref_name }} |
-        echo "tag_name: $tag_name --- checkout_ref: $checkout_ref"
+        default_branch=${{ github.event.repository.default_branch }}
+        echo "tag_name: .$tag_name. --- checkout_ref: .$checkout_ref. --- default_branch: .$default_branch."
 
     - name: Checkout code
       uses: actions/checkout@v4

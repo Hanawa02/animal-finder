@@ -24,7 +24,6 @@ jobs:
   create-release:
     needs:
       - build-gradle-project
-      - get-tag-name
     name: Create Release
     runs-on: ubuntu-latest
     steps:
@@ -32,7 +31,7 @@ jobs:
         run: |
           tag_name=${{ needs.get-tag.outputs.NAME }} |
           ref_name=${{ github.ref_name }} |
-          echo "tag_name: $tag_name --- ref_name: $ref_name"
+          echo "tag_name: .$tag_name. --- ref_name: .$ref_name."
 #      - name: Checkout code
 #        uses: actions/checkout@v4
 #        with:
