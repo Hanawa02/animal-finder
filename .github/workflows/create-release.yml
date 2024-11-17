@@ -35,7 +35,8 @@ jobs:
       - name: Create Release
         run: | 
           echo "${{ steps.extract-versions.outputs.mod_version }} for Minecraft ${{ steps .extract-versions.outputs.minecraft_version }}" |
-          gh release create ${{ github.ref_name }} ./build/libs/* --generate-notes --verify-tag --target ${{ github .ref_name }} --title "${{ steps.extract-versions.outputs.mod_version }} for Minecraft ${{ steps .extract-versions.outputs.minecraft_version }}"
+          gh release create ${{ github.ref_name }} ./build/libs/* --generate-notes --verify-tag --target ${{ github.ref_name }} --title "${{ steps.extract-versions.outputs.mod_version }} for Minecraft ${{ steps 
+          .extract-versions.outputs.minecraft_version }}"
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
