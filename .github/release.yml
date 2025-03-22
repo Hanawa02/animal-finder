@@ -1,0 +1,8 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: Animal Finder ${{ steps.extract-versions.outputs.mod_version }} for Minecraft  ${{ steps.extract-versions.outputs.minecraft_version }}
+      labels:
+        - "*"
