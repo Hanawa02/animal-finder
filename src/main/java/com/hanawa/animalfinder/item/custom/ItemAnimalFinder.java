@@ -301,19 +301,22 @@ public class ItemAnimalFinder extends Item {
             distance
         );
 
-        List<Entity> entitiesFound = getEntities(level, searchCenter);
+        List<Entity> entitiesFound = getEntities(level, searchCenter, player);
 
         player.getCooldowns().addCooldown(this, 30);
         Map<String, List<Entity>> animalsFound = filterValidEntities(entitiesFound, mainHandItem);
         notifyUserAboutEntitiesFound(animalsFound, player);
     }
 
-    private List<Entity> getEntities(Level level, Vec3 fromPosition) {
+    private List<Entity> getEntities(Level level, Vec3 fromPosition, Player player) {
         AABB area = new AABB(
             fromPosition.x - distance, fromPosition.y - distance, fromPosition.z - distance,
             fromPosition.x + distance, fromPosition.y + distance, fromPosition.z + distance);
 
-       return level.getEntities(null, area);
+        // Sort Entities starting by the closest ones
+        List<Entity> entitiesFound = level.getEntities(null, area);
+        entitiesFound.sort(Comparator.comparingDouble(entity -> entity.distanceTo(player)));
+        return entitiesFound;
     }
 
     private Map<String, List<Entity>> filterValidEntities(List<Entity> entities, ItemStack mainHandItem) {
