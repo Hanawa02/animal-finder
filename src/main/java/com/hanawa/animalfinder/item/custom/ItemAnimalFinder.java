@@ -249,7 +249,7 @@ public class ItemAnimalFinder extends Item {
             return;
         }
 
-        sendMessage(player,"animalfinder.tool.message.animal_not_registered");
+        sendMessage(player,"animalfinder.tool.message.animal_not_registered", I18n.get(animalId));
     }
 
     private void registerEntityFromLivingEntity(@NotNull Player player, @NotNull LivingEntity animal) {
