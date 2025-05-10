@@ -1,5 +1,6 @@
 package com.hanawa.animalfinder.item.custom;
 
+import com.hanawa.animalfinder.config.CommonConfigs;
 import com.hanawa.animalfinder.tag.ModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
 import com.hanawa.animalfinder.tag.ForgeExtraModTags;
@@ -30,8 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class ItemAnimalFinder extends Item {
-    private final int distance;
-    private final int maxSlots;
+    private final int tier;
 
     private final String MODE_ALL = "animalfinder.tool.search_mode.all";
 
@@ -47,10 +47,9 @@ public class ItemAnimalFinder extends Item {
         SEARCH
     }
 
-    public ItemAnimalFinder(Properties properties, int distance, int maxSlots ) {
+    public ItemAnimalFinder(Properties properties, int tier ) {
         super(properties.stacksTo(1));
-        this.distance = distance;
-        this.maxSlots = maxSlots;
+        this.tier = tier;
     }
 
     @Override
@@ -155,6 +154,26 @@ public class ItemAnimalFinder extends Item {
         return InteractionResult.SUCCESS;
     }
 
+    private int maxSlots() {
+        return switch (tier) {
+            case 5 -> CommonConfigs.ANIMAL_FINDER_TIER_5_SLOTS.get();
+            case 4 -> CommonConfigs.ANIMAL_FINDER_TIER_4_SLOTS.get();
+            case 3 -> CommonConfigs.ANIMAL_FINDER_TIER_3_SLOTS.get();
+            case 2 -> CommonConfigs.ANIMAL_FINDER_TIER_2_SLOTS.get();
+            default -> CommonConfigs.ANIMAL_FINDER_TIER_1_SLOTS.get();
+        };
+    }
+
+    private int range() {
+        return switch (tier) {
+            case 5 -> CommonConfigs.ANIMAL_FINDER_TIER_5_RANGE.get();
+            case 4 -> CommonConfigs.ANIMAL_FINDER_TIER_4_RANGE.get();
+            case 3 -> CommonConfigs.ANIMAL_FINDER_TIER_3_RANGE.get();
+            case 2 -> CommonConfigs.ANIMAL_FINDER_TIER_2_RANGE.get();
+            default -> CommonConfigs.ANIMAL_FINDER_TIER_1_RANGE.get();
+        };
+    }
+
     /* Search mode */
     private String getSearchMode(ItemStack item) {
         CompoundTag tagCompound = item.getOrCreateTag();
@@ -208,7 +227,7 @@ public class ItemAnimalFinder extends Item {
     private void registerEntity(@NotNull Player player, @NotNull ItemStack searchToolItem, @NotNull String animalId) {
         List<String> registeredAnimals = getRegisteredEntities(searchToolItem);
 
-        if (registeredAnimals.size() >= maxSlots) {
+        if (registeredAnimals.size() >= maxSlots()) {
             sendMessage(player,"animalfinder.tool.message.full_storage");
             return;
         }
@@ -298,7 +317,7 @@ public class ItemAnimalFinder extends Item {
             player,
  "animalfinder.tool.message.searching",
             getTranslatedEntitiesName(registeredAnimals),
-            distance
+            range()
         );
 
         List<Entity> entitiesFound = getEntities(level, searchCenter, player);
@@ -309,6 +328,8 @@ public class ItemAnimalFinder extends Item {
     }
 
     private List<Entity> getEntities(Level level, Vec3 fromPosition, Player player) {
+        int distance = range();
+
         AABB area = new AABB(
             fromPosition.x - distance, fromPosition.y - distance, fromPosition.z - distance,
             fromPosition.x + distance, fromPosition.y + distance, fromPosition.z + distance);
@@ -345,8 +366,7 @@ public class ItemAnimalFinder extends Item {
                     animalsOfTypeFound = new ArrayList<>();
                 }
 
-                int MAX_RESULTS_PER_ANIMAL = 5;
-                if (animalsOfTypeFound.size() >= MAX_RESULTS_PER_ANIMAL) {
+                if (animalsOfTypeFound.size() >= CommonConfigs.ANIMAL_FINDER_MAX_RESULTS_PER_ANIMAL.get()) {
                     continue;
                 }
 
