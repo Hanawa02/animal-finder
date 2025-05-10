@@ -6,6 +6,7 @@ import com.hanawa.animalfinder.tag.ForgeExtraModTags;
 import com.hanawa.animalfinder.util.ItemToAnimalMap;
 import com.hanawa.animalfinder.util.GlowingHelper;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -365,7 +366,7 @@ public class ItemAnimalFinder extends Item {
             return;
         }
 
-        List<String> searchResult = new ArrayList<>();
+        sendMessage(player, "animalfinder.tool.message.search_result_found");
         for(Map.Entry<String, List<Entity>> entry: entitiesMap.entrySet()) {
 
             String animalName = entry.getKey();
@@ -377,10 +378,10 @@ public class ItemAnimalFinder extends Item {
                 animalName = I18n.get(animalName);
             }
 
-            searchResult.add(String.format("%s: %d", animalName, animals.size()));
+            BlockPos closestAnimalLocation = animals.get(0).blockPosition();
+            String closestAnimalCoordinates = String.format("X: %d, Y: %d, Z: %d",closestAnimalLocation.getX(), closestAnimalLocation.getY(),closestAnimalLocation.getZ());
+            sendMessage(player, String.format("%s: %d. Closest at %s.", animalName, animals.size(), closestAnimalCoordinates));
         }
-        sendMessage(player, "animalfinder.tool.message.search_result_found", String.join(", ", searchResult));
-
     }
 
     /* Utils */
