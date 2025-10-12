@@ -45,6 +45,7 @@ public class AnimalFinder
 //        // Register the Deferred Register to the mod event bus so tabs get registered
 //        CREATIVE_MODE_TABS.register(modEventBus);
 
+        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfigs.SPEC, "animal-finder-common.toml");
 
         // Register ourselves for server and other game events we are interested in
@@ -53,8 +54,6 @@ public class AnimalFinder
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
-        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-//        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -114,6 +113,13 @@ public class AnimalFinder
         map.addEntry(Items.TROPICAL_FISH.getDescriptionId(), EntityType.TROPICAL_FISH.getDescriptionId());
         map.addEntry(Items.SEAGRASS.getDescriptionId(), EntityType.TURTLE.getDescriptionId());
         map.addEntry(Items.MUTTON.getDescriptionId(), EntityType.WOLF.getDescriptionId());
+
+        // basic mobs
+        map.addEntry(Items.ROTTEN_FLESH.getDescriptionId(), EntityType.ZOMBIE.getDescriptionId());
+        map.addEntry(Items.BONE.getDescriptionId(), EntityType.SKELETON.getDescriptionId());
+        map.addEntry(Items.GRASS_BLOCK.getDescriptionId(), EntityType.ENDERMAN.getDescriptionId());
+        map.addEntry(Items.GOLD_NUGGET.getDescriptionId(), EntityType.PIGLIN.getDescriptionId());
+        map.addEntry(Items.CROSSBOW.getDescriptionId(), EntityType.PILLAGER.getDescriptionId());
     }
 
 

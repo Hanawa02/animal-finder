@@ -21,6 +21,8 @@ public class CommonConfigs {
     public static final ForgeConfigSpec.ConfigValue<Integer> ANIMAL_FINDER_TIER_5_SLOTS;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> ANIMAL_FINDER_MAX_RESULTS_PER_ANIMAL;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ANIMAL_FINDER_LIST_ALL_LOCATIONS;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ANIMAL_FINDER_USE_JOURNEY_MAP_LINKS;
 
 static {
     BUILDER.push("Configs for Animal Finder");
@@ -41,6 +43,8 @@ static {
     ANIMAL_FINDER_TIER_5_SLOTS = BUILDER.comment("Number of Animal Type Slots for Diamond Animal Finder").define("Diamond Animal Finder Slots", 256);
 
     ANIMAL_FINDER_MAX_RESULTS_PER_ANIMAL = BUILDER.comment("The max number of animals to be highlighted (by type of animal)").define("Animal Finder Max Results per animal", 5);
+    ANIMAL_FINDER_LIST_ALL_LOCATIONS  = BUILDER.comment("If true, the location of all animals found will be listed in the console").define("Animal Finder List all animals", false);
+    ANIMAL_FINDER_USE_JOURNEY_MAP_LINKS  = BUILDER.comment("If true, the location will be displayed using journey map mod link structure").define("Animal Finder Use Journey Map Links", false);
 
     BUILDER.pop();
 

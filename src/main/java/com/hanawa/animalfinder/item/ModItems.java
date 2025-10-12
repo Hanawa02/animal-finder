@@ -1,7 +1,6 @@
 package com.hanawa.animalfinder.item;
 
 import com.hanawa.animalfinder.AnimalFinder;
-import com.hanawa.animalfinder.config.CommonConfigs;
 import com.hanawa.animalfinder.item.custom.ItemAnimalFinder;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;

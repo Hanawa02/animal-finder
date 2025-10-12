@@ -3,7 +3,6 @@ package com.hanawa.animalfinder.item.custom;
 import com.hanawa.animalfinder.config.CommonConfigs;
 import com.hanawa.animalfinder.tag.ModTags;
 import com.hanawa.animalfinder.util.CompoundTagUtil;
-import com.hanawa.animalfinder.tag.ForgeExtraModTags;
 import com.hanawa.animalfinder.util.ItemToAnimalMap;
 import com.hanawa.animalfinder.util.GlowingHelper;
 import net.minecraft.client.resources.language.I18n;
@@ -239,12 +238,12 @@ public class ItemAnimalFinder extends Item {
             return;
         }
 
-        boolean isAnimal = animal.getTags().toList().contains(ForgeExtraModTags.EntityTypes.ANIMALS);
-
-        if (!isAnimal) {
-            sendMessage(player,"animalfinder.tool.message.not_an_animal");
-            return;
-        }
+//        boolean isAnimal = animal.getTags().toList().contains(ForgeExtraModTags.EntityTypes.ANIMALS);
+//
+//        if (!isAnimal) {
+//            sendMessage(player,"animalfinder.tool.message.not_an_animal");
+//            return;
+//        }
 
         if (!registeredAnimals.contains(animalId)) {
             registeredAnimals.add(animalId);
@@ -401,10 +400,31 @@ public class ItemAnimalFinder extends Item {
                 animalName = I18n.get(animalName);
             }
 
-            BlockPos closestAnimalLocation = animals.get(0).blockPosition();
-            String closestAnimalCoordinates = String.format("X: %d, Y: %d, Z: %d",closestAnimalLocation.getX(), closestAnimalLocation.getY(),closestAnimalLocation.getZ());
-            sendMessage(player, String.format("%s: %d. Closest at %s.", animalName, animals.size(), closestAnimalCoordinates));
+            sendMessage(player, String.format("%s: %d.", animalName, animals.size()));
+
+            if (CommonConfigs.ANIMAL_FINDER_LIST_ALL_LOCATIONS.get()) {
+                for (int index = 0; index < animals.size(); index ++) {
+                    Entity animal = animals.get(index);
+                    sendAnimalLocationMessage(player, animal, animalName, index+1);
+                }
+
+            } else {
+                Entity closestAnimal = animals.get(0);
+                sendAnimalLocationMessage(player, closestAnimal, animalName, 1);
+            }
         }
+    }
+
+    private void sendAnimalLocationMessage(Player player, Entity animal, String animalName, Integer animalDistanceIndex) {
+        BlockPos animalLocation = animal.blockPosition();
+        String coordinates = String.format("X: %d, Y: %d, Z: %d",animalLocation.getX(), animalLocation.getY(),animalLocation.getZ());
+
+        if (CommonConfigs.ANIMAL_FINDER_USE_JOURNEY_MAP_LINKS.get()) {
+            sendMessage(player, String.format("[name:\"%d. %s\", %s] .", animalDistanceIndex, animalName, coordinates));
+        } else {
+            sendMessage(player, String.format("%d. %s: %s.",animalDistanceIndex, animalName, coordinates));
+        }
+
     }
 
     /* Utils */
